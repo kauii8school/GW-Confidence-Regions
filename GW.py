@@ -124,11 +124,6 @@ class GWDetector:
         return (1/8) * (1 + (6 * (math.cos(psi) ** 2)) + (math.cos(psi) ** 4))
 
     @staticmethod
-    def COMPASS_TO_ANGLE(compassdirection):
-        ret = ((5 * math.pi) / 2) - compassdirection
-        return ret
-
-    @staticmethod
     def DMS_TO_DEGREES(degs, mins, secs):
         ret = degs + (mins/60) + (secs/3600)
         return ret
@@ -141,38 +136,65 @@ eta_AP = math.pi/2
 #Livingston Louisiana LIGO
 beta_LOUIS = math.radians(GWDetector.DMS_TO_DEGREES(30,33,46.4))
 lambd_LOUIS = math.radians(GWDetector.DMS_TO_DEGREES(90,46,27.3))
-chi_LOUIS = GWDetector.COMPASS_TO_ANGLE(math.radians(208))
+chi_LOUIS = math.radians(208)
 Dv_LOUIS = 190 
 LouisianaDict = {"beta" : beta_LOUIS, "lambd" : lambd_LOUIS, "chi" : chi_LOUIS, "eta" : eta_AP, "name" : "LIGO Louisiana", "visibility distance" : Dv_LOUIS}
 
 #Hanford Washington LIGO
 beta_WASH = math.radians(GWDetector.DMS_TO_DEGREES(46,27,18.5))
 lambd_WASH = math.radians(GWDetector.DMS_TO_DEGREES(119,24,27.6))
-chi_WASH = GWDetector.COMPASS_TO_ANGLE(math.radians(279))
+chi_WASH = math.radians(279)
 Dv_WASH = 190
 WashingtonDict = {"beta" : beta_WASH, "lambd" : lambd_WASH, "chi" : chi_WASH, "eta" : eta_AP, "name" : "LIGO Washington", "visibility distance" : Dv_WASH}
 
 #VIRGO
 beta_VIRGO = math.radians(GWDetector.DMS_TO_DEGREES(43,37,53))
 lambd_VIRGO = math.radians(GWDetector.DMS_TO_DEGREES(10,30,16))
-chi_VIRGO = GWDetector.COMPASS_TO_ANGLE(math.radians(333.5))
+chi_VIRGO = math.radians(333.5)
 Dv_VIRGO = 170
 VirgoDict = {"beta" : beta_VIRGO, "lambd" : lambd_VIRGO, "chi" : chi_VIRGO, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_VIRGO}
 
+#Test detector
+#VIRGO
+beta_Test = math.radians(GWDetector.DMS_TO_DEGREES(13, 0, 0))
+lambd_Test = math.radians(GWDetector.DMS_TO_DEGREES(200, 0, 0))
+chi_Test = math.pi/2 * .234234
+print("chi = {}   beta = {}   lambda = {}".format(chi_Test, beta_Test, lambd_Test))
+Dv_Test = 170
+TestDict = {"beta" : beta_Test, "lambd" : lambd_Test, "chi" : chi_Test, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_Test}
+
 psi = 0
 delta = 100
-thetaList = np.linspace(-math.pi/2, math.pi/2, delta)
-phiList = np.linspace(-math.pi, math.pi, delta)
+thetaList = np.linspace(0, math.pi, delta)
+phiList = np.linspace(0, 2 * math.pi, delta)
 Virgo = GWDetector(VirgoDict["beta"], VirgoDict["lambd"], VirgoDict["chi"], VirgoDict["eta"], VirgoDict["name"], VirgoDict["visibility distance"])
+
+Test = GWDetector(TestDict["beta"], TestDict["lambd"], TestDict["chi"], TestDict["eta"], TestDict["name"], TestDict["visibility distance"])
+theta = math.pi/2
+phi = 0
+psi = 0
+
+a, b = (Test.afunction(theta, phi), Test.bfunction(theta, phi))
+# print("a {}".format(a))
+# print("b {}".format(b))
+# print("F+ {}".format(Test.AP_PLUS(a, b, psi)))
+# print("Fx {}".format(Test.AP_CROSS(a, b, psi)))
+# print("App {}".format(Test.getAntennaPowerPattern(theta, phi, psi)))
+
 for i, phi in enumerate(thetaList):
     for j, theta in enumerate(phiList):
-        z = Virgo.getAntennaPowerPattern(theta, phi, psi)
-print(max(Virgo.appList))
-print(max(Virgo.aList))
-print(max(Virgo.bList))
-print(max(Virgo.plusList))
-print(max(Virgo.crossList))
-print(Virgo.Single_AP_CROSS(0, 0, 0), Virgo.Single_AP_PLUS(0, 0, 0))
+        #print(theta, phi)
+        z = Test.getAntennaPowerPattern(theta, phi, psi)
+
+
+# print(max(Test.aList))
+
+# print(max(Virgo.appList))
+# print(max(Virgo.aList))
+# print(max(Virgo.bList))
+# print(max(Virgo.plusList))
+# print(max(Virgo.crossList))
+# print(Virgo.Single_AP_CROSS(0, 0, 0), Virgo.Single_AP_PLUS(0, 0, 0))
 
 detectorDictList = [LouisianaDict, WashingtonDict, VirgoDict]
 earthDetectorNetwork = GWDetectorNetwork(detectorDictList)
