@@ -32,7 +32,7 @@ class GWDetector:
 
     """ Class for a GW detector contains antenna power patterns mostly, params include longitude, lattitude, orientation, and seperation """        
 
-    def __init__(self, _beta, _lambda, _chi, _eta, _name, _HorizonDistance):
+    def __init__(self, _beta, _lambda, _chi, _eta, _name, _horizonDistance):
 
         """ Beta is lattitude, lambda is longitude, chi is orientation measured counter clockwise from east, opening angle of arms is eta """
 
@@ -41,7 +41,7 @@ class GWDetector:
         self.chi = _chi
         self.eta = _eta
         self.name = _name
-        self.dv = _HorizonDistance
+        self.dv = _horizonDistance
 
         self.appList, self.crossList, self.plusList, self.aList, self.bList = ([], [], [], [], [])
 
@@ -116,8 +116,13 @@ class GWDetector:
 
     @staticmethod
     def Single_AP_CROSS(theta, phi, psi):
-        ret = ((1/2) * (1 + (math.cos(theta) ** 2)) * math.cos(2 * phi) * math.cos(2 * psi)) + (math.cos(theta) * math.sin(2 * phi) * math.cos(2 * psi))
+        ret = ((1/2) * (1 + (math.cos(theta) ** 2)) * math.cos(2 * phi) * math.sin(2 * psi)) + (math.cos(theta) * math.sin(2 * phi) * math.cos(2 * psi))
         return ret
+
+    @staticmethod
+    def getSingleAntennaPowerPattern(theta, phi, psi):
+        ret = (GWDetector.Single_AP_CROSS(theta, phi, psi) ** 2) + (GWDetector.Single_AP_PLUS(theta, phi, psi) ** 2)
+        return ret 
 
     @staticmethod
     def inclinationMultiplier(psi):
@@ -155,26 +160,23 @@ Dv_VIRGO = 170
 VirgoDict = {"beta" : beta_VIRGO, "lambd" : lambd_VIRGO, "chi" : chi_VIRGO, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_VIRGO}
 
 #Test detector
-#VIRGO
 beta_Test = math.radians(GWDetector.DMS_TO_DEGREES(13, 0, 0))
 lambd_Test = math.radians(GWDetector.DMS_TO_DEGREES(200, 0, 0))
 chi_Test = math.pi/2 * .234234
-print("chi = {}   beta = {}   lambda = {}".format(chi_Test, beta_Test, lambd_Test))
 Dv_Test = 170
 TestDict = {"beta" : beta_Test, "lambd" : lambd_Test, "chi" : chi_Test, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_Test}
 
+#Creates temporary GW Detectors
 psi = 0
 delta = 100
 thetaList = np.linspace(0, math.pi, delta)
 phiList = np.linspace(0, 2 * math.pi, delta)
+
 Virgo = GWDetector(VirgoDict["beta"], VirgoDict["lambd"], VirgoDict["chi"], VirgoDict["eta"], VirgoDict["name"], VirgoDict["visibility distance"])
-
 Test = GWDetector(TestDict["beta"], TestDict["lambd"], TestDict["chi"], TestDict["eta"], TestDict["name"], TestDict["visibility distance"])
-theta = math.pi/2
-phi = 0
-psi = 0
 
-a, b = (Test.afunction(theta, phi), Test.bfunction(theta, phi))
+
+#a, b = (Test.afunction(theta, phi), Test.bfunction(theta, phi))
 # print("a {}".format(a))
 # print("b {}".format(b))
 # print("F+ {}".format(Test.AP_PLUS(a, b, psi)))
@@ -183,9 +185,7 @@ a, b = (Test.afunction(theta, phi), Test.bfunction(theta, phi))
 
 for i, phi in enumerate(thetaList):
     for j, theta in enumerate(phiList):
-        #print(theta, phi)
         z = Test.getAntennaPowerPattern(theta, phi, psi)
-
 
 # print(max(Test.aList))
 

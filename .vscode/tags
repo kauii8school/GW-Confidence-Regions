@@ -1,0 +1,108 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AP_CROSS	../GW.py	/^    def AP_CROSS(self, a, b, psi):$/;"	kind:member	line:105
+AP_PLUS	../GW.py	/^    def AP_PLUS(self, a, b, psi):$/;"	kind:member	line:97
+DMS_TO_DEGREES	../GW.py	/^    def DMS_TO_DEGREES(degs, mins, secs):$/;"	kind:member	line:132
+Dv_LOUIS	../GW.py	/^Dv_LOUIS = 190 $/;"	kind:variable	line:145
+Dv_Test	../GW.py	/^Dv_Test = 170$/;"	kind:variable	line:166
+Dv_VIRGO	../GW.py	/^Dv_VIRGO = 170$/;"	kind:variable	line:159
+Dv_WASH	../GW.py	/^Dv_WASH = 190$/;"	kind:variable	line:152
+Event	../Mapping.py	/^class Event:$/;"	kind:class	line:17
+GW.py	../GW.py	1;"	kind:file	line:1
+GWDetector	../GW.py	/^class GWDetector:$/;"	kind:class	line:31
+GWDetectorNetwork	../GW.py	/^class GWDetectorNetwork:$/;"	kind:class	line:8
+LouisianaDict	../GW.py	/^LouisianaDict = {"beta" : beta_LOUIS, "lambd" : lambd_LOUIS, "chi" : chi_LOUIS, "eta" : eta_AP, "name" : "LIGO Louisiana", "visibility distance" : Dv_LOUIS}$/;"	kind:variable	line:146
+Machine.py	../Machine Learning/Machine.py	1;"	kind:file	line:1
+Mapping.py	../Mapping.py	1;"	kind:file	line:1
+MiscFunctions.py	../MiscFunctions.py	1;"	kind:file	line:1
+N	../Mapping.py	/^    N = n*3+1 # number of points in the Path$/;"	kind:variable	line:82
+PolyArea	../Machine Learning/Machine.py	/^def PolyArea(polyPoints):$/;"	kind:function	line:10
+Single_AP_CROSS	../GW.py	/^    def Single_AP_CROSS(theta, phi, psi):$/;"	kind:member	line:118
+Single_AP_PLUS	../GW.py	/^    def Single_AP_PLUS(theta, phi, psi):$/;"	kind:member	line:113
+Test	../GW.py	/^Test = GWDetector(TestDict["beta"], TestDict["lambd"], TestDict["chi"], TestDict["eta"], TestDict["name"], TestDict["visibility distance"])$/;"	kind:variable	line:176
+TestDict	../GW.py	/^TestDict = {"beta" : beta_Test, "lambd" : lambd_Test, "chi" : chi_Test, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_Test}$/;"	kind:variable	line:167
+Virgo	../GW.py	/^Virgo = GWDetector(VirgoDict["beta"], VirgoDict["lambd"], VirgoDict["chi"], VirgoDict["eta"], VirgoDict["name"], VirgoDict["visibility distance"])$/;"	kind:variable	line:175
+VirgoDict	../GW.py	/^VirgoDict = {"beta" : beta_VIRGO, "lambd" : lambd_VIRGO, "chi" : chi_VIRGO, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_VIRGO}$/;"	kind:variable	line:160
+WashingtonDict	../GW.py	/^WashingtonDict = {"beta" : beta_WASH, "lambd" : lambd_WASH, "chi" : chi_WASH, "eta" : eta_AP, "name" : "LIGO Washington", "visibility distance" : Dv_WASH}$/;"	kind:variable	line:153
+__init__	../GW.py	/^    def __init__(self, _beta, _lambda, _chi, _eta, _name, _horizonDistance):$/;"	kind:member	line:35
+__init__	../GW.py	/^    def __init__(self, detectorList):$/;"	kind:member	line:10
+__init__	../Mapping.py	/^    def __init__(self, _theta, _phi, _psi, _distance):$/;"	kind:member	line:19
+afunction	../GW.py	/^    def afunction(self, theta, phi):$/;"	kind:member	line:60
+all_epochs	../Machine Learning/Machine.py	/^all_epochs = []$/;"	kind:variable	line:38
+all_penalties	../Machine Learning/Machine.py	/^all_penalties = []$/;"	kind:variable	line:39
+alpha	../Machine Learning/Machine.py	/^alpha = 0.1$/;"	kind:variable	line:33
+angles	../Mapping.py	/^    angles = np.linspace(0,2*np.pi,N)$/;"	kind:variable	line:85
+approxTotalEvents	../Mapping.py	/^approxTotalEvents = 10000$/;"	kind:variable	line:40
+beta_LOUIS	../GW.py	/^beta_LOUIS = math.radians(GWDetector.DMS_TO_DEGREES(30,33,46.4))$/;"	kind:variable	line:142
+beta_Test	../GW.py	/^beta_Test = math.radians(GWDetector.DMS_TO_DEGREES(13, 0, 0))$/;"	kind:variable	line:163
+beta_VIRGO	../GW.py	/^beta_VIRGO = math.radians(GWDetector.DMS_TO_DEGREES(43,37,53))$/;"	kind:variable	line:156
+beta_WASH	../GW.py	/^beta_WASH = math.radians(GWDetector.DMS_TO_DEGREES(46,27,18.5))$/;"	kind:variable	line:149
+bfunction	../GW.py	/^    def bfunction(self, theta, phi):$/;"	kind:member	line:80
+chi_LOUIS	../GW.py	/^chi_LOUIS = math.radians(208)$/;"	kind:variable	line:144
+chi_Test	../GW.py	/^chi_Test = math.pi\/2 * .234234$/;"	kind:variable	line:165
+chi_VIRGO	../GW.py	/^chi_VIRGO = math.radians(333.5)$/;"	kind:variable	line:158
+chi_WASH	../GW.py	/^chi_WASH = math.radians(279)$/;"	kind:variable	line:151
+circle	../Mapping.py	/^    circle = [[i * math.cos(theta), i * math.sin(theta)] for theta in np.linspace(0, 2 * math.pi, 100)]$/;"	kind:variable	line:77
+codes	../Mapping.py	/^    codes = np.full(N,mppath.Path.CURVE4)$/;"	kind:variable	line:86
+colorList	../Mapping.py	/^colorList = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'burlywood']$/;"	kind:variable	line:71
+cs	../tempCodeRunnerFile.py	/^cs = map.contour(x,y,wave+mean,15,linewidths=1.5)$/;"	kind:variable	line:1
+cwd	../Mapping.py	/^cwd = os.getcwd()$/;"	kind:variable	line:13
+delta	../GW.py	/^delta = 100$/;"	kind:variable	line:171
+detectedEventList	../Mapping.py	/^detectedEventList = []$/;"	kind:variable	line:55
+detectedPhiList	../Mapping.py	/^detectedPhiList = [event.phi for  event in detectedEventList]$/;"	kind:variable	line:64
+detectedThetaList	../Mapping.py	/^detectedThetaList = [event.theta for event in detectedEventList]$/;"	kind:variable	line:63
+detectedThetaPhiPoints	../Mapping.py	/^detectedThetaPhiPoints = [event.thetaPhiPoint for event in detectedEventList]$/;"	kind:variable	line:67
+detectedXList	../Mapping.py	/^detectedXList = [event.X for event in detectedEventList]$/;"	kind:variable	line:65
+detectedXYPoints	../Mapping.py	/^detectedXYPoints = [event.XYPoint for event in detectedEventList]$/;"	kind:variable	line:68
+detectedYList	../Mapping.py	/^detectedYList = [event.Y for event  in detectedEventList]$/;"	kind:variable	line:66
+detectionFraction	../Mapping.py	/^    detectionFraction = numPointsInside \/ numDetectedEvents$/;"	kind:variable	line:97
+detectorDictList	../GW.py	/^detectorDictList = [LouisianaDict, WashingtonDict, VirgoDict]$/;"	kind:variable	line:199
+distanceList	../Mapping.py	/^distanceList = np.linspace(0, maxDistance, numDistancePoints)$/;"	kind:variable	line:34
+earthDetectorNetwork	../GW.py	/^earthDetectorNetwork = GWDetectorNetwork(detectorDictList)/;"	kind:variable	line:200
+epsilon	../Machine Learning/Machine.py	/^epsilon = 0.1$/;"	kind:variable	line:35
+eta_AP	../GW.py	/^eta_AP = math.pi\/2$/;"	kind:variable	line:139
+eventList	../Mapping.py	/^eventList = []$/;"	kind:variable	line:49
+eventsForDistance	../Mapping.py	/^    eventsForDistance = k * (distance ** 3)$/;"	kind:variable	line:37
+gamma	../Machine Learning/Machine.py	/^gamma = 0.6$/;"	kind:variable	line:34
+getAntennaPowerPattern	../GW.py	/^    def getAntennaPowerPattern(self, theta, phi, psi):$/;"	kind:member	line:20
+getAntennaPowerPattern	../GW.py	/^    def getAntennaPowerPattern(self, theta, phi, psi):$/;"	kind:member	line:49
+getSingleAntennaPowerPattern	../GW.py	/^    def getSingleAntennaPowerPattern(theta, phi, psi):$/;"	kind:member	line:123
+inclinationMultiplier	../GW.py	/^    def inclinationMultiplier(psi):$/;"	kind:member	line:128
+k	../Mapping.py	/^k = 1$/;"	kind:variable	line:31
+lambd_LOUIS	../GW.py	/^lambd_LOUIS = math.radians(GWDetector.DMS_TO_DEGREES(90,46,27.3))$/;"	kind:variable	line:143
+lambd_Test	../GW.py	/^lambd_Test = math.radians(GWDetector.DMS_TO_DEGREES(200, 0, 0))$/;"	kind:variable	line:164
+lambd_VIRGO	../GW.py	/^lambd_VIRGO = math.radians(GWDetector.DMS_TO_DEGREES(10,30,16))$/;"	kind:variable	line:157
+lambd_WASH	../GW.py	/^lambd_WASH = math.radians(GWDetector.DMS_TO_DEGREES(119,24,27.6))$/;"	kind:variable	line:150
+maxDistance	../Mapping.py	/^maxDistance = 170$/;"	kind:variable	line:32
+n	../Mapping.py	/^    n = 10 # Number of possibly sharp edges$/;"	kind:variable	line:79
+numDetectedEvents	../Mapping.py	/^numDetectedEvents = len(detectedEventList) $/;"	kind:variable	line:61
+numDistancePoints	../Mapping.py	/^numDistancePoints = 200$/;"	kind:variable	line:33
+numEventsAtDistance	../Mapping.py	/^numEventsAtDistance = []$/;"	kind:variable	line:35
+numPointsInside	../Machine Learning/Machine.py	/^numPointsInside = list(pointsInside).count(True)$/;"	kind:variable	line:25
+numPointsInside	../Mapping.py	/^    numPointsInside = list(pointsInside).count(True)$/;"	kind:variable	line:96
+numTrials	../Mapping.py	/^numTrials = 300$/;"	kind:variable	line:73
+patch	../Mapping.py	/^    patch = mpatches.PathPatch(path, fill = False, color = (random.random(), random.random(), random.random()), lw=2)$/;"	kind:variable	line:102
+path	../Machine Learning/Machine.py	/^path = mppath.Path(shape)  $/;"	kind:variable	line:23
+path	../Mapping.py	/^    path = mppath.Path(verts, codes)$/;"	kind:variable	line:92
+percentEvents	../Mapping.py	/^    percentEvents = numEventsAtDistance[i] \/ tempTotalEvents$/;"	kind:variable	line:43
+phiList	../GW.py	/^phiList = np.linspace(0, 2 * math.pi, delta)$/;"	kind:variable	line:173
+points	../Machine Learning/Machine.py	/^points = [[1, 1], [1, 2], [2, 1], [2, 2]]$/;"	kind:variable	line:17
+pointsInside	../Machine Learning/Machine.py	/^pointsInside = path.contains_points(points)$/;"	kind:variable	line:24
+pointsInside	../Mapping.py	/^    pointsInside = path.contains_points(detectedXYPoints)$/;"	kind:variable	line:95
+psi	../GW.py	/^psi = 0$/;"	kind:variable	line:170
+q_table	../Machine Learning/Machine.py	/^q_table = np.zeros([len(points), len(shape)])$/;"	kind:variable	line:29
+r	../Mapping.py	/^    r = 1 # magnitude of the perturbation from the unit circle, $/;"	kind:variable	line:80
+shape	../Machine Learning/Machine.py	/^shape = [[math.cos(theta), math.sin(theta)] for theta in np.linspace(0, 2 * math.pi, 15)]$/;"	kind:variable	line:20
+startingShape	../Mapping.py	/^startingShape = [[math.cos(theta), math.sin(theta)] for theta in np.linspace(0, 2 * math.pi, 100)]$/;"	kind:variable	line:74
+tempCodeRunnerFile.py	../Machine Learning/tempCodeRunnerFile.py	1;"	kind:file	line:1
+tempCodeRunnerFile.py	../tempCodeRunnerFile.py	1;"	kind:file	line:1
+tempTotalEvents	../Mapping.py	/^tempTotalEvents = sum(numEventsAtDistance)$/;"	kind:variable	line:41
+testFunction	../GW.py	/^def testFunction(theta, phi):$/;"	kind:function	line:5
+thetaList	../GW.py	/^thetaList = np.linspace(0, math.pi, delta)$/;"	kind:variable	line:172
+trueTotalEvents	../Mapping.py	/^trueTotalEvents = sum(numEventsAtDistance)$/;"	kind:variable	line:46
+verts	../Mapping.py	/^    verts = np.stack((np.cos(angles),np.sin(angles))).T*(2*r*np.random.random(N)+1-r)[:,None]$/;"	kind:variable	line:89
+z	../Mapping.py	/^    z = GWDetector.getSingleAntennaPowerPattern(event.theta, event.phi, event.psi)  * ((maxDistance  **  2) \/ (event.distance  ** 2))$/;"	kind:variable	line:57
