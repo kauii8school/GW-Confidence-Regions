@@ -58,19 +58,15 @@ class GWDetector:
         return powerPattern
 
     def afunction(self, theta, phi):
-        ret = ((1/16) * math.sin(2 * self.chi) * (3 - math.cos(2 * self.beta)) * (3 - math.cos(2 * theta))
-            * math.cos(2 * (phi + self.lambd)))
-
-        + ((1/4) * math.cos(2 * self.chi) * math.sin(self.beta) * (3 - math.cos(2 * theta))
-        * math.sin(2 * (phi + self.lambd)))
-
-        + ((1/4) * math.sin(2 * self.chi) * math.sin(2 * self.beta)
-        * math.sin(2 * theta) * math.cos(phi + self.lambd))
-
-        + ((1/2) * math.cos(2 * self.chi) * math.cos(self.beta) *
-        math.sin(2 * theta) * math.sin(phi + self.lambd))
-
-        + ((3/4) * math.sin(2 * self.chi) * (math.cos(self.beta) ** 2) * (math.sin(theta) ** 2))
+        ret = ((1/16) * math.sin(2 * self.chi) * (3 - math.cos(2 * self.beta)) * (3 - math.cos(2 * theta))\
+            * math.cos(2 * (phi + self.lambd)))\
+        + ((1/4) * math.cos(2 * self.chi) * math.sin(self.beta) * (3 - math.cos(2 * theta))\
+        * math.sin(2 * (phi + self.lambd)))\
+        + ((1/4) * math.sin(2 * self.chi) * math.sin(2 * self.beta)\
+        * math.sin(2 * theta) * math.cos(phi + self.lambd))\
+        + ((1/2) * math.cos(2 * self.chi) * math.cos(self.beta) *\
+        math.sin(2 * theta) * math.sin(phi + self.lambd))\
+        + ((3/4) * math.sin(2 * self.chi) * (math.cos(self.beta) ** 2) * (math.sin(theta) ** 2))\
 
         self.aList.append(ret)
 
@@ -78,17 +74,14 @@ class GWDetector:
 
 
     def bfunction(self, theta, phi):
-        ret = (math.cos(2 * self.chi) * math.sin(self.beta) *
-            math.cos(theta) * math.cos(2 * (phi + self.lambd)))
-
-        - ((1/4) * math.sin(2 * self.chi) * (3 - math.cos(2 * self.beta))
-        * math.cos(theta) * math.sin(2 * (phi * self.lambd)))
-
-        + (math.cos(2 * self.chi) * math.cos(self.beta) *
-        math.sin(theta) * math.cos(phi + self.lambd))
-
-        - ((1/2) * math.sin(2 * self.chi) * math.sin(2 * self.beta)
-        * math.sin(theta) * math.sin(phi + self.lambd))
+        ret = (math.cos(2 * self.chi) * math.sin(self.beta) *\
+            math.cos(theta) * math.cos(2 * (phi + self.lambd)))\
+        - ((1/4) * math.sin(2 * self.chi) * (3 - math.cos(2 * self.beta))\
+        * math.cos(theta) * math.sin(2 * (phi * self.lambd)))\
+        + (math.cos(2 * self.chi) * math.cos(self.beta) *\
+        math.sin(theta) * math.cos(phi + self.lambd))\
+        - ((1/2) * math.sin(2 * self.chi) * math.sin(2 * self.beta)\
+        * math.sin(theta) * math.sin(phi + self.lambd))\
 
         self.bList.append(ret)
 
@@ -111,12 +104,14 @@ class GWDetector:
 
     @staticmethod
     def Single_AP_PLUS(theta, phi, psi):
-        ret = ((1/2) * (1 + (math.cos(theta) ** 2)) * math.cos(2 * phi) * math.cos(2 * psi)) - (math.cos(theta) * math.sin(2 * phi) * math.sin(2 * psi))
+        ret = ((1/2) * (1 + (math.cos(theta) ** 2)) * math.cos(2 * phi) * math.cos(2 * psi)) - (math.cos(theta) * math.sin(2 * phi) * math.sin(2 *\
+            psi))
         return ret
 
     @staticmethod
     def Single_AP_CROSS(theta, phi, psi):
-        ret = ((1/2) * (1 + (math.cos(theta) ** 2)) * math.cos(2 * phi) * math.sin(2 * psi)) + (math.cos(theta) * math.sin(2 * phi) * math.cos(2 * psi))
+        ret = ((1/2) * (1 + (math.cos(theta) ** 2)) * math.cos(2 * phi) * math.sin(2 * psi)) + (math.cos(theta) * math.sin(2 * phi) * math.cos(2 *\
+        psi))
         return ret
 
     @staticmethod
@@ -160,41 +155,22 @@ Dv_VIRGO = 170
 VirgoDict = {"beta" : beta_VIRGO, "lambd" : lambd_VIRGO, "chi" : chi_VIRGO, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_VIRGO}
 
 #Test detector
-beta_Test = math.radians(GWDetector.DMS_TO_DEGREES(13, 0, 0))
-lambd_Test = math.radians(GWDetector.DMS_TO_DEGREES(200, 0, 0))
-chi_Test = math.pi/2 * .234234
+beta_Test = math.radians(GWDetector.DMS_TO_DEGREES(0, 0, 0))  + math.pi/2
+lambd_Test = math.radians(GWDetector.DMS_TO_DEGREES(0, 0, 0))
+chi_Test = 0
 Dv_Test = 170
 TestDict = {"beta" : beta_Test, "lambd" : lambd_Test, "chi" : chi_Test, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_Test}
 
-#Creates temporary GW Detectors
-psi = 0
-delta = 100
-thetaList = np.linspace(0, math.pi, delta)
-phiList = np.linspace(0, 2 * math.pi, delta)
-
 Virgo = GWDetector(VirgoDict["beta"], VirgoDict["lambd"], VirgoDict["chi"], VirgoDict["eta"], VirgoDict["name"], VirgoDict["visibility distance"])
+
 Test = GWDetector(TestDict["beta"], TestDict["lambd"], TestDict["chi"], TestDict["eta"], TestDict["name"], TestDict["visibility distance"])
 
+Washington = GWDetector(WashingtonDict["beta"], WashingtonDict["lambd"], WashingtonDict["chi"], WashingtonDict["eta"], WashingtonDict["name"], WashingtonDict["visibility distance"])
 
-#a, b = (Test.afunction(theta, phi), Test.bfunction(theta, phi))
-# print("a {}".format(a))
-# print("b {}".format(b))
-# print("F+ {}".format(Test.AP_PLUS(a, b, psi)))
-# print("Fx {}".format(Test.AP_CROSS(a, b, psi)))
-# print("App {}".format(Test.getAntennaPowerPattern(theta, phi, psi)))
+Louisiana = GWDetector(LouisianaDict["beta"], LouisianaDict["lambd"], LouisianaDict["chi"], LouisianaDict["eta"], LouisianaDict["name"], LouisianaDict["visibility distance"])
 
-for i, phi in enumerate(thetaList):
-    for j, theta in enumerate(phiList):
-        z = Test.getAntennaPowerPattern(theta, phi, psi)
+detectorToTest = Virgo
+print(detectorToTest.beta, detectorToTest.lambd, detectorToTest.chi)
 
-# print(max(Test.aList))
-
-# print(max(Virgo.appList))
-# print(max(Virgo.aList))
-# print(max(Virgo.bList))
-# print(max(Virgo.plusList))
-# print(max(Virgo.crossList))
-# print(Virgo.Single_AP_CROSS(0, 0, 0), Virgo.Single_AP_PLUS(0, 0, 0))
-
-detectorDictList = [LouisianaDict, WashingtonDict, VirgoDict]
+detectorDictList = [VirgoDict, WashingtonDict, LouisianaDict]
 earthDetectorNetwork = GWDetectorNetwork(detectorDictList)

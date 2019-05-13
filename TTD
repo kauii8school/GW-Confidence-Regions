@@ -1,0 +1,6 @@
+things to do for contour mapping:
+check if APP is correct using Schutz paper
+check if we are properly using basemap to transform coordinates
+find best algo for contour drawings
+    Implement recursion
+    Create function that given a bigList and a smallList finds the closest point to the smallList
