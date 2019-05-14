@@ -9,6 +9,8 @@ import random
 import matplotlib.path as mppath
 import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
+from Circularization import *
+from MiscFunctions import *
 
 cwd = os.getcwd()
 sys.path.insert(0, os.path.join(cwd, "Main", "Images"))
@@ -53,12 +55,14 @@ for i, distance in enumerate(distanceList):
         eventList.append(Event(theta, phi, psi, distance))
 
 detectedEventList = []
-for event in eventList:
+for i, event in enumerate(eventList):
 
-    z = Louisiana.getAntennaPowerPattern(event.theta, event.phi, event.psi)  * ((maxDistance  **  2) / (event.distance  ** 2))
-    z *= ((1/8) * (1 + (6 * math.cos(event.psi) ** 2) + (math.cos(event.psi) ** 4)))
-    if z > 1:
-        detectedEventList.append(event)
+        z = GWDetector.getSingleAntennaPowerPattern(event.theta, event.phi, event.psi)  * ((maxDistance  **  2) / (event.distance  ** 2))
+        z *= ((1/8) * (1 + (6 * math.cos(event.psi) ** 2) + (math.cos(event.psi) ** 4)))
+        if z > 1:
+                detectedEventList.append(event)
+
+        printProgressBar(i, len(eventList))
 
 numDetectedEvents = len(detectedEventList) 
 
@@ -75,46 +79,38 @@ colorList = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'burlywood']
 numTrials = 300
 startingShape = [[math.cos(theta), math.sin(theta)] for theta in np.linspace(0, 2 * math.pi, 100)]
 
-for i in range(0 , numTrials):
-    circle = [[i * math.cos(theta), i * math.sin(theta)] for theta in np.linspace(0, 2 * math.pi, 100)]
+_ret = getFractionalItems(detectedXYPoints, .5, returnFmt=1)
+path = _ret[1] 
 
-    path = mppath.Path(circle)
-    
-    pointsInside = path.contains_points(detectedXYPoints)
-    numPointsInside = list(pointsInside).count(True)
-    detectionFraction = numPointsInside / numDetectedEvents
-
-    if not (.89 < detectionFraction < .91):
-        continue
-
-    patch = mpatches.PathPatch(path, fill = False, color = (random.random(), random.random(), random.random()), lw=2)
-    ax.add_patch(patch)
+patch = mpatches.PathPatch(path, fill = False, color = (random.random(), random.random(), random.random()), lw=2)
+ax.add_patch(patch)
 
 
 #Scatter plot showing where all theta and phis were detected
 
-# plt.xlabel("X")
-# plt.ylabel("Y")
-# plt.legend()
-# plt.scatter(detectedXList, detectedYList, s = 1)
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.legend()
 
-fig = plt.gcf()
-fig.set_size_inches(8, 6.5)
-
-m = Basemap(projection='merc', \
-            llcrnrlat=-80, urcrnrlat=80, \
-            llcrnrlon=-180, urcrnrlon=180, \
-            lat_ts=20, \
-            resolution='c')
-
-# m = Basemap(projection='ortho',lat_0=0,lon_0=0,resolution='l') #Globe Projection
-
-# m.bluemarble(scale=0.2)   # full scale will be overkill
-m.drawcoastlines(color='black', linewidth=0.2)  # add coastlines
-
-lons, lats = [math.degrees(theta - math.pi/2) for theta in detectedThetaList], [math.degrees(phi) for phi in detectedPhiList]
-print(math.degrees(-math.pi/2))
-x, y = m(lons, lats)  # transform coordinates
-plt.scatter(x, y, s=1) 
-
+ax.scatter(detectedXList, detectedYList, s = 1)
 plt.show()
+# fig = plt.gcf()
+# fig.set_size_inches(8, 6.5)
+
+# m = Basemap(projection='merc', \
+#             llcrnrlat=-80, urcrnrlat=80, \
+#             llcrnrlon=-180, urcrnrlon=180, \
+#             lat_ts=20, \
+#             resolution='c')
+
+# # m = Basemap(projection='ortho',lat_0=0,lon_0=0,resolution='l') #Globe Projection
+
+# # m.bluemarble(scale=0.2)   # full scale will be overkill
+# m.drawcoastlines(color='black', linewidth=0.2)  # add coastlines
+
+# lons, lats = [math.degrees(theta - math.pi/2) for theta in detectedThetaList], [math.degrees(phi) for phi in detectedPhiList]
+# print(math.degrees(-math.pi/2))
+# x, y = m(lons, lats)  # transform coordinates
+# plt.scatter(x, y, s=1) 
+
+# plt.show()
