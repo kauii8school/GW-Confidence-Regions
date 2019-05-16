@@ -38,11 +38,10 @@ print("plus  {}  theta {}    phi {}".format(maxPlus, maxThetaPlus, maxPhiPlus))
 print("cross {}  theta {}    phi {}".format(maxCross, maxThetaCross, maxPhiCross))
 print("app   {}  theta {}    phi {}".format(maxAntennaPowerPattern, maxThetaApp, maxPhiApp))
 
-
 delta = 100
-thetaList = np.linspace(-math.pi/2, math.pi/2, delta)
+thetaList = np.linspace(0, math.pi, delta)
 phiList = np.linspace(-math.pi, math.pi, delta)
-psi = 0
+psi = .5
 ZList, plotThetaList, plotPhiList, plotXList, plotYList = ([], [], [], [], [])
 for i, phi in enumerate(phiList):
     for j, theta in enumerate(thetaList):
@@ -54,17 +53,15 @@ for i, phi in enumerate(phiList):
         ZList.append(z)
 
 # print(max(ZList))
-# fig, ax = plt.subplots()
-# CS = ax.tricontour(plotPhiList, plotThetaList, ZList)
-# ax.clabel(CS, inline=1, fontsize=10)
-# ax.set_xlabel(r"X")
-# ax.set_ylabel(r"Y")
-# ax.set_title("Antenna Power Patterns for LIGO and VIRGO")
-# plt.show()
-
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-CS = ax.plot_trisurf(plotXList, plotYList, ZList)
-ax.scatter(plotXList, plotYList, ZList, c='b', marker='o')
-ax.plot_trisurf(plotXList, plotYList, ZList)
+fig, ax = plt.subplots()
+plotPhiList, plotThetaList = [math.degrees(phi) for phi in plotPhiList], [math.degrees(theta - math.pi/2) for theta in plotThetaList]
+CS = ax.tricontour(plotPhiList, plotThetaList, ZList)
+ax.clabel(CS, inline=1, fontsize=10)
+ax.set_title("Antenna Power Patterns for LIGO and VIRGO")
 plt.show()
+
+# ax = fig.add_subplot(111, projection='3d')
+# CS = ax.plot_trisurf(plotXList, plotYList, ZList)
+# ax.scatter(plotXList, plotYList, ZList, c='b', marker='o')
+# ax.plot_trisurf(plotXList, plotYList, ZList)
+# plt.show()

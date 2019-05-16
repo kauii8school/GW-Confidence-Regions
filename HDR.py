@@ -20,46 +20,6 @@ def getFractionalItems(points, detectionFraction, ax, returnFmt = 0, refinements
     #Inputs: detection fraction and set of points
     #Outputs: mppath.Path giving line circling fractional amount of points
 
-    def chaikins_corner_cutting(coords, refinements=1):
-        coords = np.array(coords)
-
-        for _ in range(refinements):
-            L = coords.repeat(2, axis=0)
-            R = np.empty_like(L)
-            R[0] = L[0]
-            R[2::2] = L[1:-1:2]
-            R[1:-1:2] = L[2::2]
-            R[-1] = L[-1]
-            coords = L * 0.75 + R * 0.25
-
-        return coords
-
-    def closest_node(node, nodes):
-
-        """ returns closest node using dot vectorization, slightly faster see https://codereview.stackexchange.com/questions/28207/finding-the-closest-point-to-a-list-of-points """
-
-        if node in nodes:
-            nodes.remove(node)
-
-        nodes = np.asarray(nodes)
-        deltas = nodes - node
-        dist_2 = np.einsum('ij,ij->i', deltas, deltas)
-        temp = nodes[np.argmin(dist_2)]
-        return (temp[0], temp[1])
-
-    def averagePoints(nodeList):
-        #Consider switching to numpy mean arrays if performance is an issue
-        #inits
-        tempX, tempY = 0, 0
-        for node in nodeList:
-            tempX += node[0]
-            tempY += node[1]
-        
-        avX, avY = tempX/len(nodeList), tempY/len(nodeList)
-        avPoint = [avX, avY]
-
-        return avPoint
-
     def fractionalPoints(totalNodeList, recNodeList, fracPoints):
 
         """ Starts out with one point should be in a place of high density #NOTE this is not automated yet. Keep adding points (it will add the closest)
@@ -84,7 +44,7 @@ def getFractionalItems(points, detectionFraction, ax, returnFmt = 0, refinements
     #Hull creation and getting of verticies
     hull = ConvexHull(fracPoints)
     polyVertices = [fracPoints[vertex] for vertex in hull.vertices] 
-    cutVertices = chaikins_corner_cutting(polyVertices, refinements)
+    hullArea = hull.area
 
     #Path creation 
     polyCodes = [mppath.Path.LINETO] * len(polyVertices)

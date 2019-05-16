@@ -58,28 +58,29 @@ class GWDetector:
         return powerPattern
 
     def afunction(self, theta, phi):
+
         ret = ((1/16) * math.sin(2 * self.chi) * (3 - math.cos(2 * self.beta)) * (3 - math.cos(2 * theta))\
-            * math.cos(2 * (phi + self.lambd)))\
+        * math.cos(2 * (phi + self.lambd)))\
         + ((1/4) * math.cos(2 * self.chi) * math.sin(self.beta) * (3 - math.cos(2 * theta))\
         * math.sin(2 * (phi + self.lambd)))\
         + ((1/4) * math.sin(2 * self.chi) * math.sin(2 * self.beta)\
         * math.sin(2 * theta) * math.cos(phi + self.lambd))\
-        + ((1/2) * math.cos(2 * self.chi) * math.cos(self.beta) *\
-        math.sin(2 * theta) * math.sin(phi + self.lambd))\
-        + ((3/4) * math.sin(2 * self.chi) * (math.cos(self.beta) ** 2) * (math.sin(theta) ** 2))\
+        + ((1/2) * math.cos(2 * self.chi) * math.cos(self.beta)\
+        * math.sin(2 * theta) * math.sin(phi + self.lambd))\
+        + ((3/4) * math.sin(2 * self.chi) * (math.cos(self.beta) ** 2) * (math.sin(theta) ** 2))
 
         self.aList.append(ret)
 
         return ret
 
-
     def bfunction(self, theta, phi):
-        ret = (math.cos(2 * self.chi) * math.sin(self.beta) *\
-            math.cos(theta) * math.cos(2 * (phi + self.lambd)))\
+
+        ret = (math.cos(2 * self.chi) * math.sin(self.beta)\
+        * math.cos(theta) * math.cos(2 * (phi + self.lambd)))\
         - ((1/4) * math.sin(2 * self.chi) * (3 - math.cos(2 * self.beta))\
-        * math.cos(theta) * math.sin(2 * (phi * self.lambd)))\
-        + (math.cos(2 * self.chi) * math.cos(self.beta) *\
-        math.sin(theta) * math.cos(phi + self.lambd))\
+        * math.cos(theta) * math.sin(2 * (phi + self.lambd)))\
+        + (math.cos(2 * self.chi) * math.cos(self.beta)\
+        * math.sin(theta) * math.cos(phi + self.lambd))\
         - ((1/2) * math.sin(2 * self.chi) * math.sin(2 * self.beta)\
         * math.sin(theta) * math.sin(phi + self.lambd))\
 
@@ -135,14 +136,14 @@ eta_AP = math.pi/2
 
 #Livingston Louisiana LIGO
 beta_LOUIS = math.radians(GWDetector.DMS_TO_DEGREES(30,33,46.4))
-lambd_LOUIS = math.radians(GWDetector.DMS_TO_DEGREES(90,46,27.3))
+lambd_LOUIS = math.radians(GWDetector.DMS_TO_DEGREES(-90,-46,-27.3))
 chi_LOUIS = math.radians(208)
 Dv_LOUIS = 190 
 LouisianaDict = {"beta" : beta_LOUIS, "lambd" : lambd_LOUIS, "chi" : chi_LOUIS, "eta" : eta_AP, "name" : "LIGO Louisiana", "visibility distance" : Dv_LOUIS}
 
 #Hanford Washington LIGO
 beta_WASH = math.radians(GWDetector.DMS_TO_DEGREES(46,27,18.5))
-lambd_WASH = math.radians(GWDetector.DMS_TO_DEGREES(119,24,27.6))
+lambd_WASH = math.radians(GWDetector.DMS_TO_DEGREES(-119,-24,-27.6))
 chi_WASH = math.radians(279)
 Dv_WASH = 190
 WashingtonDict = {"beta" : beta_WASH, "lambd" : lambd_WASH, "chi" : chi_WASH, "eta" : eta_AP, "name" : "LIGO Washington", "visibility distance" : Dv_WASH}
