@@ -9,7 +9,7 @@ import random
 import matplotlib.path as mppath
 import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
-from Circularization import *
+#from Circularization import *
 from MiscFunctions import *
 
 cwd = os.getcwd()
@@ -41,14 +41,14 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 1e4
+approxTotalEvents = 1e5
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
     numEventsAtDistance[i] = int(round(percentEvents * approxTotalEvents))
 
 trueTotalEvents = sum(numEventsAtDistance)
-
+print('hi')
 # Event generation
 eventList = []
 for i, distance in enumerate(distanceList):
@@ -63,7 +63,7 @@ for i, event in enumerate(eventList):
     z = earthDetectorNetwork.getAntennaPowerPattern(
         event.theta, event.phi, event.psi) * ((maxDistance ** 2) / (event.distance ** 2))
     z *= ((1/8) * (1 + (6 * math.cos(event.psi) ** 2) + (math.cos(event.psi) ** 4)))
-    if z > 12:
+    if z > 12: #NOTE Change to 12 when using all detectors
         detectedEventList.append(event)
 
     printProgressBar(i, len(eventList))
@@ -76,6 +76,10 @@ detectedXList = [event.X for event in detectedEventList]
 detectedYList = [event.Y for event in detectedEventList]
 detectedThetaPhiPoints = [event.thetaPhiPoint for event in detectedEventList]
 detectedXYPoints = [event.XYPoint for event in detectedEventList]
+
+print(detectedThetaPhiPoints)
+
+print(detectedXYPoints)
 
 #Plotting inits
 fig, ax = plt.subplots()
