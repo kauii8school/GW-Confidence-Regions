@@ -147,26 +147,26 @@ class Circularization:
 
                 hullVertices.insert(k, element)
 
-            #Testing
-            fig, ax = plt.subplots()
+            # #Testing
+            # fig, ax = plt.subplots()
 
-            x, y = zip(*self.points)
-            ax.scatter(x, y, s = 1, c='b')
-            x,y = zip(*hullVertices)
-            plt.scatter(x,y, c='r', label = diffArea, s=4)
-            plt.xlim([-4, 4])
-            plt.ylim([-4, 4])
+            # x, y = zip(*self.points)
+            # ax.scatter(x, y, s = 1, c='b')
+            # x,y = zip(*hullVertices)
+            # plt.scatter(x,y, c='r', label = diffArea, s=4)
+            # plt.xlim([-4, 4])
+            # plt.ylim([-4, 4])
 
-            codes = [mppath.Path.LINETO] * len(hullVertices)
-            codes[0] = mppath.Path.MOVETO
-            codes[-1] = mppath.Path.CLOSEPOLY
-            path = mppath.Path(hullVertices, codes)
-            path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
-            ax.add_patch(path)
+            # codes = [mppath.Path.LINETO] * len(hullVertices)
+            # codes[0] = mppath.Path.MOVETO
+            # codes[-1] = mppath.Path.CLOSEPOLY
+            # path = mppath.Path(hullVertices, codes)
+            # path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+            # ax.add_patch(path)
 
-            plt.savefig("Frames/Frame{0:03d}".format(j))
-            plt.close()
-            #Testing
+            # plt.savefig("Frames/Frame{0:03d}".format(j))
+            # plt.close()
+            # #Testing
 
             throwAway, indexMax = np.unravel_index(hullVertM.argmax(), hullVertM.shape)
             valToRem = hullVertices[indexMax]
@@ -216,26 +216,26 @@ class Circularization:
 
                     hullVertices.insert(k, element)
 
-                #Testing
-                fig, ax = plt.subplots()
+                # #Testing
+                # fig, ax = plt.subplots()
 
-                x, y = zip(*self.points)
-                ax.scatter(x, y, s = 1, c='b')
-                x,y = zip(*hullVertices)
-                plt.scatter(x,y, c='r', label = diffArea, s=4)
-                plt.xlim([-4, 4])
-                plt.ylim([-4, 4])
+                # x, y = zip(*self.points)
+                # ax.scatter(x, y, s = 1, c='b')
+                # x,y = zip(*hullVertices)
+                # plt.scatter(x,y, c='r', label = diffArea, s=4)
+                # plt.xlim([-4, 4])
+                # plt.ylim([-4, 4])
 
-                codes = [mppath.Path.LINETO] * len(hullVertices)
-                codes[0] = mppath.Path.MOVETO
-                codes[-1] = mppath.Path.CLOSEPOLY
-                path = mppath.Path(hullVertices, codes)
-                path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
-                ax.add_patch(path)
+                # codes = [mppath.Path.LINETO] * len(hullVertices)
+                # codes[0] = mppath.Path.MOVETO
+                # codes[-1] = mppath.Path.CLOSEPOLY
+                # path = mppath.Path(hullVertices, codes)
+                # path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+                # ax.add_patch(path)
 
-                plt.savefig("Frames/Frame{0:03d}".format(j))
-                plt.close()
-                #Testing
+                # plt.savefig("Frames/Frame{0:03d}".format(j))
+                # plt.close()
+                # #Testing
 
                 throwAway, indexMax = np.unravel_index(hullVertM.argmax(), hullVertM.shape)
                 valToRem = hullVertices[indexMax]
@@ -295,32 +295,32 @@ class Circularization:
             valToRem = clusterHullList[indexMaxI][indexMaxJ]
             sortedClusterDict[indexMaxI].remove(valToRem)
 
-            #Testing
-            fig, ax = plt.subplots()
+            # #Testing
+            # fig, ax = plt.subplots()
 
-            x, y = zip(*self.points)
-            ax.scatter(x, y, s = 1, c='b')
-            for i in range(0, nClusters):
-                hull =  ConvexHull(sortedClusterDict[i])
-                hullVertices = [sortedClusterDict[i][vertex] for vertex in hull.vertices]
-                x,y = zip(*hullVertices)
-                plt.xlim([-6, 6])
-                plt.ylim([-6, 6])
-                ax.scatter(x,y, c='r', label = np.amax(clusterHullVertM), s=4)
+            # x, y = zip(*self.points)
+            # ax.scatter(x, y, s = 1, c='b')
+            # for i in range(0, nClusters):
+            #     hull =  ConvexHull(sortedClusterDict[i])
+            #     hullVertices = [sortedClusterDict[i][vertex] for vertex in hull.vertices]
+            #     x,y = zip(*hullVertices)
+            #     plt.xlim([-6, 6])
+            #     plt.ylim([-6, 6])
+            #     ax.scatter(x,y, c='r', label = np.amax(clusterHullVertM), s=4)
 
-                codes = [mppath.Path.LINETO] * len(hullVertices)
-                codes[0] = mppath.Path.MOVETO
-                codes[-1] = mppath.Path.CLOSEPOLY
-                path = mppath.Path(hullVertices, codes)
-                path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
-                ax.add_patch(path)
+            #     codes = [mppath.Path.LINETO] * len(hullVertices)
+            #     codes[0] = mppath.Path.MOVETO
+            #     codes[-1] = mppath.Path.CLOSEPOLY
+            #     path = mppath.Path(hullVertices, codes)
+            #     path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+            #     ax.add_patch(path)
                 
-            plt.legend()
-            plt.savefig("Frames/Frame_{0:03d}".format(k))
-            plt.close()
-            #Testing
+            # plt.legend()
+            # plt.savefig("Frames/Frame_{0:03d}".format(k))
+            # plt.close()
+            # #Testing
 
-        return hullVertices
+        return sortedClusterDict
 
 def PolyArea(xy):
     zipped = list(zip(*xy))
@@ -353,34 +353,3 @@ def angleBetweenPoints(pointIndex, points):
     angle = np.arccos(cosine_angle)
 
     return angle
-
-
-#from TEST_Dump import points
-cov = [[1, 0], [0, 1]]
-
-points1 = np.random.multivariate_normal([-3, 3], cov, 600)
-points2 = np.random.multivariate_normal([3, -3], cov, 600)
-points3 = np.random.multivariate_normal([0, 0], cov, 600)
-points1 = [list(element) for element in points1]
-points2 = [list(element) for element in points2]
-points3 = [list(element) for element in points3]
-
-bimodalDist = points1 + points2
-points = points3
-# xPoints, yPoints = zip(*points)
-# plt.scatter(xPoints, yPoints)
-# plt.show()
-
-testCirculizer = Circularization(points, .5)
-greedHeur = testCirculizer.greedyHeuristicUniModal()
-hull = ConvexHull(points)
-hullVertices = [points[vertex] for vertex in hull.vertices] 
-x, y = zip(*hullVertices)
-plt.scatter(x,y,c='r')
-xPoints = [point[0] for point in points]
-yPoints = [point[1] for point in points]
-plt.scatter(xPoints, yPoints, s=1)
-
-plt.xlim([-1, 1])
-plt.ylim([-1, 1])
-plt.show()    

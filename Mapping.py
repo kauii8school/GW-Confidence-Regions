@@ -9,7 +9,7 @@ import random
 import matplotlib.path as mppath
 import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
-#from Circularization import *
+from Circularization import *
 from MiscFunctions import *
 
 cwd = os.getcwd()
@@ -97,28 +97,30 @@ detectedLonLatList = list(zip(detectedLonList, detectedLatList))
 ax.scatter(detectedLonList, detectedLatList, s=.5, c='r')
 
 #Fractional items 
-_ret = getFractionalItems(detectedLonLatList, .5, ax, returnFmt=-2, refinements=5)
-fracLonLatEdgePoints, fracLonLatEdgePath, fracLonLatPoints = _ret[0][0], _ret[0][1], _ret[1]
-
-#Inside points
-fracLonPointsList = [var[0] for var in fracLonLatPoints]
-fracLatPointsList = [var[1] for var in fracLonLatPoints]
-ax.scatter(fracLonPointsList, fracLatPointsList, s=.5, c='m')
+frac50 = Circularization(detectedLatList, detectedLonList)
+nClusters = 2
+clusterDict = frac50.greedyHeuristicMultiModal(nClusters)
 
 #Edge points
-fracLonEdgeList = [var[0] for var in fracLonLatEdgePoints]
-fracLatEdgeList = [var[1] for var in fracLonLatEdgePoints]
-fracLonLatEdgePoints = list(zip(fracLonEdgeList, fracLatEdgeList))
+edgePointsList = []
+for i in range(0, nClusters):
+    hull =  ConvexHull(clusterDict[i])
+    hullVertices = [clusterDict[i][vertex] for vertex in hull.vertices]
+    x,y = zip(*hullVertices)
+    edgePointsList.append((x, y))
 
 #Path Creation
-codes = [mppath.Path.LINETO] * len(fracLonLatEdgePoints)
-codes[0] = mppath.Path.MOVETO
-codes[-1] = mppath.Path.CLOSEPOLY
-fracLonLatEdgePath = mppath.Path(fracLonLatEdgePoints, codes)
+fracLonLatEdgePathList = []
+for fracLonLatEdgePoints in edgePointsList:
+    codes = [mppath.Path.LINETO] * len(fracLonLatEdgePoints)
+    codes[0] = mppath.Path.MOVETO
+    codes[-1] = mppath.Path.CLOSEPOLY
+    fracLonLatEdgePathList.append(mppath.Path(fracLonLatEdgePoints, codes))
 
 #Creating Patches
-fracLonLatEdgePatch = mpatches.PathPatch(fracLonLatEdgePath, fill=False, color='g', lw=2)
-ax.add_patch(fracLonLatEdgePatch)
+for fracLonLatEdgePath in fracLonLatEdgePathList:
+    fracLonLatEdgePatch = mpatches.PathPatch(fracLonLatEdgePath, fill=False, color='g', lw=2)
+    ax.add_patch(fracLonLatEdgePatch)
 
 #Plotting Detectors
 WashingtonLat, WashingtonLon = m(math.degrees(lambd_WASH), math.degrees(beta_WASH))
