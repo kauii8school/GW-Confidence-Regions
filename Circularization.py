@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.path as mppath
 from scipy.spatial import ConvexHull
 from MiscFunctions import *
-
+from sklearn.cluster import KMeans
 
 class Circularization:
     
@@ -148,12 +148,22 @@ class Circularization:
                 hullVertices.insert(k, element)
 
             #Testing
+            fig, ax = plt.subplots()
+
             x, y = zip(*self.points)
-            plt.scatter(x, y, s = 1, c='b')
+            ax.scatter(x, y, s = 1, c='b')
             x,y = zip(*hullVertices)
-            plt.scatter(x,y, c='r', label = diffArea)
+            plt.scatter(x,y, c='r', label = diffArea, s=4)
             plt.xlim([-4, 4])
             plt.ylim([-4, 4])
+
+            codes = [mppath.Path.LINETO] * len(hullVertices)
+            codes[0] = mppath.Path.MOVETO
+            codes[-1] = mppath.Path.CLOSEPOLY
+            path = mppath.Path(hullVertices, codes)
+            path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+            ax.add_patch(path)
+
             plt.savefig("Frames/Frame{0:03d}".format(j))
             plt.close()
             #Testing
@@ -207,12 +217,22 @@ class Circularization:
                     hullVertices.insert(k, element)
 
                 #Testing
+                fig, ax = plt.subplots()
+
                 x, y = zip(*self.points)
-                plt.scatter(x, y, s = 1, c='b')
+                ax.scatter(x, y, s = 1, c='b')
                 x,y = zip(*hullVertices)
-                plt.scatter(x,y, c='r', label = diffArea)
+                plt.scatter(x,y, c='r', label = diffArea, s=4)
                 plt.xlim([-4, 4])
                 plt.ylim([-4, 4])
+
+                codes = [mppath.Path.LINETO] * len(hullVertices)
+                codes[0] = mppath.Path.MOVETO
+                codes[-1] = mppath.Path.CLOSEPOLY
+                path = mppath.Path(hullVertices, codes)
+                path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+                ax.add_patch(path)
+
                 plt.savefig("Frames/Frame{0:03d}".format(j))
                 plt.close()
                 #Testing
@@ -224,50 +244,81 @@ class Circularization:
         return hullVertices
 
 
-    def greedyHeuristicMultiModal(self):
+    def greedyHeuristicMultiModal(self, nClusters):
     
         ''' See file:///home/n/Downloads/Setup/9449-Fadallah.pdf greedy heuristic '''
 
         #Inits
         criticalValue = 1 - self.detectionFraction
-
         fracPoints = self.points
 
+        #K-means clustering
+        kmeans = KMeans(n_clusters = nClusters, random_state = 0).fit(self.points)
+        
+        #Creating dictionary which determines 
+        sortedClusterDict = {i:[] for i in range(0, nClusters)}
+        for i, cluster in enumerate(kmeans.predict(self.points)):
+            sortedClusterDict[cluster].append(self.points[i])
 
-        for j in range(0, math.floor(self.detectionFraction * self.numPoints)):
+        for k in range(0, math.floor(self.detectionFraction * self.numPoints)):
+                        
+            clusterHullList, maxLen = [], 0
+            for i in range(0, nClusters):
+
+                clusterPoints = sortedClusterDict[i]
+                
+                #Creating convex hull and calculating vertices
+                hull = ConvexHull(clusterPoints)
+                hullVertices = [clusterPoints[vertex] for vertex in hull.vertices]
+                clusterHullList.append(hullVertices)
+
+                #Finding max length of vertices
+                if len(hullVertices) > maxLen:
+                    maxLen = len(hullVertices)
             
-            #Creating convex hull and calculating vertices
-            hull = ConvexHull(fracPoints)
-            hullVertices = [fracPoints[vertex] for vertex in hull.vertices] 
-            hullVertM = np.zeros((1, len(hullVertices)))
-            areaBefore = PolyArea(hullVertices)
+            clusterHullVertM = np.zeros([len(clusterHullList), maxLen])
+            #Go through all the clusters
+            for i, clusterHull in enumerate(clusterHullList):
+                for j in range(0, len(clusterHull)):
+                    areaBefore = PolyArea(clusterHull)
+                    element = clusterHull[j]
+                    clusterHull.pop(j)
+                    areaAfter = PolyArea(clusterHull)
+                    diffArea = areaBefore - areaAfter
+                    
+                    clusterHullVertM[i, j] = diffArea
 
-            for k in range(0, len(hullVertices)):
-                element = hullVertices[k]
-                hullVertices.pop(k)
+                    clusterHull.insert(j, element)
 
-                areaAfter = PolyArea(hullVertices)
-                diffArea = areaBefore - areaAfter
-                hullVertM[0, k] = diffArea
+            #Delete point which has the largest areal difference    
+            indexMaxI, indexMaxJ = np.unravel_index(clusterHullVertM.argmax(), clusterHullVertM.shape)
+            valToRem = clusterHullList[indexMaxI][indexMaxJ]
+            sortedClusterDict[indexMaxI].remove(valToRem)
 
+            #Testing
+            fig, ax = plt.subplots()
 
-                #Testing
-                x, y = zip(*self.points)
-                plt.scatter(x, y, s = 1, c='b')
+            x, y = zip(*self.points)
+            ax.scatter(x, y, s = 1, c='b')
+            for i in range(0, nClusters):
+                hull =  ConvexHull(sortedClusterDict[i])
+                hullVertices = [sortedClusterDict[i][vertex] for vertex in hull.vertices]
                 x,y = zip(*hullVertices)
-                plt.scatter(x,y, c='r', label = diffArea)
-                plt.legend()
-                plt.xlim([-4, 4])
-                plt.ylim([-4, 4])
-                plt.savefig("Frames/{}_{}".format(j,k))
-                plt.close()
-                #Testing
+                plt.xlim([-6, 6])
+                plt.ylim([-6, 6])
+                ax.scatter(x,y, c='r', label = np.amax(clusterHullVertM), s=4)
 
-                hullVertices.insert(k, element)
-
-            throwAway, indexMax = np.unravel_index(hullVertM.argmax(), hullVertM.shape)
-            valToRem = hullVertices[indexMax]
-            fracPoints.remove(valToRem)
+                codes = [mppath.Path.LINETO] * len(hullVertices)
+                codes[0] = mppath.Path.MOVETO
+                codes[-1] = mppath.Path.CLOSEPOLY
+                path = mppath.Path(hullVertices, codes)
+                path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+                ax.add_patch(path)
+                
+            plt.legend()
+            plt.savefig("Frames/Frame_{0:03d}".format(k))
+            plt.close()
+            #Testing
 
         return hullVertices
 
@@ -306,12 +357,22 @@ def angleBetweenPoints(pointIndex, points):
 
 #from TEST_Dump import points
 cov = [[1, 0], [0, 1]]
-mean = [0, 0]
-points = np.random.multivariate_normal(mean, cov, 500)
-points = [list(element) for element in points]
+
+points1 = np.random.multivariate_normal([-3, 3], cov, 600)
+points2 = np.random.multivariate_normal([3, -3], cov, 600)
+points3 = np.random.multivariate_normal([0, 0], cov, 600)
+points1 = [list(element) for element in points1]
+points2 = [list(element) for element in points2]
+points3 = [list(element) for element in points3]
+
+bimodalDist = points1 + points2
+points = points3
+# xPoints, yPoints = zip(*points)
+# plt.scatter(xPoints, yPoints)
+# plt.show()
 
 testCirculizer = Circularization(points, .5)
-greedHeur = testCirculizer.greedyAngleHeuristicUniModal(math.pi/2)
+greedHeur = testCirculizer.greedyHeuristicUniModal()
 hull = ConvexHull(points)
 hullVertices = [points[vertex] for vertex in hull.vertices] 
 x, y = zip(*hullVertices)
