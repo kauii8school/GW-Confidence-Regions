@@ -341,7 +341,7 @@ class Circularization:
                     maxLen = len(hullVertices)
             
             #Going through all clusters and finding angles
-            clusterHullAngleArray = np.zeros([len(clusterHullList), maxLen])
+            clusterHullAngleArray = np.full([len(clusterHullList), maxLen], math.pi)
             for i, clusterHull in enumerate(clusterHullList):
                 for j in range(0, len(clusterHull)):
                     angle = angleBetweenPoints(j ,clusterHull)
@@ -349,9 +349,7 @@ class Circularization:
 
             if np.amin(clusterHullAngleArray) < minSharpness:
                 indexMinI, indexMinJ = np.unravel_index(clusterHullAngleArray.argmin(), clusterHullAngleArray.shape)
-                print(clusterHullList)
-                print(indexMinI, indexMinJ)
-                valToRem = clusterHullList[indexMinI][indexMinJ - 1]
+                valToRem = clusterHullList[indexMinI][indexMinJ]
                 sortedClusterDict[indexMinI].remove(valToRem)
 
             else:
@@ -375,30 +373,30 @@ class Circularization:
                 valToRem = clusterHullList[indexMaxI][indexMaxJ]
                 sortedClusterDict[indexMaxI].remove(valToRem)
 
-            # #Testing
-            # fig, ax = plt.subplots()
+            #Testing
+            fig, ax = plt.subplots()
 
-            # x, y = zip(*self.points)
-            # ax.scatter(x, y, s = 1, c='b')
-            # for i in range(0, nClusters):
-            #     hull =  ConvexHull(sortedClusterDict[i])
-            #     hullVertices = [sortedClusterDict[i][vertex] for vertex in hull.vertices]
-            #     x,y = zip(*hullVertices)
-            #     plt.xlim([-6, 6])
-            #     plt.ylim([-6, 6])
-            #     ax.scatter(x,y, c='r', label = np.amax(clusterHullVertM), s=4)
+            x, y = zip(*self.points)
+            ax.scatter(x, y, s = 1, c='b')
+            for i in range(0, nClusters):
+                hull =  ConvexHull(sortedClusterDict[i])
+                hullVertices = [sortedClusterDict[i][vertex] for vertex in hull.vertices]
+                x,y = zip(*hullVertices)
+                plt.xlim([-6, 6])
+                plt.ylim([-6, 6])
+                ax.scatter(x,y, c='r', label = np.amin(clusterHullAngleArray), s=4)
 
-            #     codes = [mppath.Path.LINETO] * len(hullVertices)
-            #     codes[0] = mppath.Path.MOVETO
-            #     codes[-1] = mppath.Path.CLOSEPOLY
-            #     path = mppath.Path(hullVertices, codes)
-            #     path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
-            #     ax.add_patch(path)
+                codes = [mppath.Path.LINETO] * len(hullVertices)
+                codes[0] = mppath.Path.MOVETO
+                codes[-1] = mppath.Path.CLOSEPOLY
+                path = mppath.Path(hullVertices, codes)
+                path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+                ax.add_patch(path)
                 
-            # plt.legend()
-            # plt.savefig("Frames/Frame_{0:03d}".format(k))
-            # plt.close()
-            # #Testing
+            plt.legend()
+            plt.savefig("Frames/Frame_{0:03d}".format(k))
+            plt.close()
+            #Testing
 
         return sortedClusterDict
 

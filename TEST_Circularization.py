@@ -2,8 +2,8 @@ from Circularization import *
 #from TEST_Dump import points
 cov = [[1, 0], [0, 1]]
 
-points1 = np.random.multivariate_normal([-3, 3], cov, 600)
-points2 = np.random.multivariate_normal([3, -3], cov, 600)
+points1 = np.random.multivariate_normal([-3, 3], cov, 300)
+points2 = np.random.multivariate_normal([3, -3], cov, 300)
 points3 = np.random.multivariate_normal([0, 0], cov, 600)
 points1 = [list(element) for element in points1]
 points2 = [list(element) for element in points2]

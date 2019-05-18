@@ -41,7 +41,7 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 1e8
+approxTotalEvents = 1e6
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
@@ -80,16 +80,15 @@ detectedXYPoints = [event.XYPoint for event in detectedEventList]
 fig, ax = plt.subplots()
 
 #Globemap
-m = Basemap(projection='moll',lon_0=0,resolution='c')
+m = Basemap(projection='hammer',lon_0=0,resolution='c')
+#m = Basemap(projection='ortho',lat_0=45,lon_0=-130,resolution='l')
 m.bluemarble(scale = .2)
 
 #For testing purposes
 #Transforming to to lattitude and longitude coordinates
 detectedLonList = [math.degrees(phi) for phi in detectedPhiList]
 detectedLatList = [math.degrees(theta - math.pi/2) for theta in detectedThetaList]
-#detectedLonList, detectedLatList = m(detectedLonList, detectedLatList)
 detectedLonLatList = list(zip(detectedLonList, detectedLatList))
-ax.scatter(detectedLonList, detectedLatList, s=.5, c='r')
 
 #Fractional items 
 detectionFraction = .5
@@ -105,18 +104,28 @@ for i in range(0, nClusters):
     cutHullVertices = chaikins_corner_cutting(hullVertices, 15)
     edgePointsList.append(cutHullVertices)
 
-#Path Creation
+#Creating paths
 fracLonLatEdgePathList = []
 for fracLonLatEdgePoints in edgePointsList:
-    codes = [mppath.Path.LINETO] * len(fracLonLatEdgePoints)
+    x,y = zip(*fracLonLatEdgePoints)
+    x,y = m(x,y)
+    fracLonLatEdgePointsT = list(zip(x,y))
+
+    codes = [mppath.Path.LINETO] * len(fracLonLatEdgePointsT)
     codes[0] = mppath.Path.MOVETO
     codes[-1] = mppath.Path.CLOSEPOLY
-    fracLonLatEdgePathList.append(mppath.Path(fracLonLatEdgePoints, codes))
 
-#Creating Patches
-for fracLonLatEdgePath in fracLonLatEdgePathList:
-    fracLonLatEdgePatch = mpatches.PathPatch(fracLonLatEdgePath, fill=False, color='g', lw=2)
-    ax.add_patch(fracLonLatEdgePatch)
+    path = mppath.Path(fracLonLatEdgePointsT, codes) 
+    patch = mpatches.PathPatch(path, lw=2, fill=False, ec = 'orange')
+    #poly = Polygon(fracLonLatEdgePointsT, c = 'g', fill = False)
+    plt.gca().add_patch(patch)
+
+#Plotting
+#Plotting detections
+detectedLonList, detectedLatList = m(detectedLonList, detectedLatList)
+m.scatter(detectedLonList, detectedLatList, s = .5, c='r')
+
+
 
 #Plotting Detectors
 WashingtonLat, WashingtonLon = m(math.degrees(lambd_WASH), math.degrees(beta_WASH))
@@ -125,4 +134,5 @@ VirgoLat, VrigoLon = m(math.degrees(lambd_VIRGO), math.degrees(beta_VIRGO))
 ax.scatter(WashingtonLat, WashingtonLon, c='y', s=4)
 ax.scatter(LouisianaLat, LouisianaLon, c='y', s=4)
 ax.scatter(VirgoLat, VrigoLon, c='y', s=4)
+
 plt.show()
