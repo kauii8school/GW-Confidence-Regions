@@ -41,14 +41,13 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 1e5
+approxTotalEvents = 1e8
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
     numEventsAtDistance[i] = int(round(percentEvents * approxTotalEvents))
 
 trueTotalEvents = sum(numEventsAtDistance)
-print('hi')
 # Event generation
 eventList = []
 for i, distance in enumerate(distanceList):
@@ -77,37 +76,34 @@ detectedYList = [event.Y for event in detectedEventList]
 detectedThetaPhiPoints = [event.thetaPhiPoint for event in detectedEventList]
 detectedXYPoints = [event.XYPoint for event in detectedEventList]
 
-print(detectedThetaPhiPoints)
-
-print(detectedXYPoints)
-
 #Plotting inits
 fig, ax = plt.subplots()
 
 #Globemap
-m = Basemap(projection='hammer',lon_0=0,resolution='c')
+m = Basemap(projection='moll',lon_0=0,resolution='c')
 m.bluemarble(scale = .2)
 
 #For testing purposes
 #Transforming to to lattitude and longitude coordinates
 detectedLonList = [math.degrees(phi) for phi in detectedPhiList]
 detectedLatList = [math.degrees(theta - math.pi/2) for theta in detectedThetaList]
-detectedLonList, detectedLatList = m(detectedLonList, detectedLatList)
+#detectedLonList, detectedLatList = m(detectedLonList, detectedLatList)
 detectedLonLatList = list(zip(detectedLonList, detectedLatList))
 ax.scatter(detectedLonList, detectedLatList, s=.5, c='r')
 
 #Fractional items 
-frac50 = Circularization(detectedLatList, detectedLonList)
+detectionFraction = .5
+frac50 = Circularization(detectedLonLatList, detectionFraction)
 nClusters = 2
 clusterDict = frac50.greedyHeuristicMultiModal(nClusters)
 
-#Edge points
+#Edge points, also applies corner cutting
 edgePointsList = []
 for i in range(0, nClusters):
     hull =  ConvexHull(clusterDict[i])
     hullVertices = [clusterDict[i][vertex] for vertex in hull.vertices]
-    x,y = zip(*hullVertices)
-    edgePointsList.append((x, y))
+    cutHullVertices = chaikins_corner_cutting(hullVertices, 15)
+    edgePointsList.append(cutHullVertices)
 
 #Path Creation
 fracLonLatEdgePathList = []
@@ -129,30 +125,4 @@ VirgoLat, VrigoLon = m(math.degrees(lambd_VIRGO), math.degrees(beta_VIRGO))
 ax.scatter(WashingtonLat, WashingtonLon, c='y', s=4)
 ax.scatter(LouisianaLat, LouisianaLon, c='y', s=4)
 ax.scatter(VirgoLat, VrigoLon, c='y', s=4)
-
 plt.show()
-
-
-
-# #Plot detection contour
-# _ret = getFractionalItems(detectedThetaPhiPoints, .5, returnFmt=0, refinements=5)
-# fracThetaPhiEdge, fracThetaPhiEdgePath = _ret[0], _ret[1]
-# fracLonsEdge = [math.degrees(coord[0] - math.pi/2) for coord in fracThetaPhiEdge]
-# fracLatsEdge = [math.degrees(coord[1] - math.pi) for coord in fracThetaPhiEdge]
-# x, y = m(fracLatsEdge, fracLonsEdge)
-# fracLongsLatsEdge = list(zip(x,y))
-# fracLongsLatsEdge = [list(coord) for coord in fracLongsLatsEdge]
-# #making codes 
-# codes = [mppath.Path.LINETO] * len(fracThetaPhiEdge)
-# codes[0] = mppath.Path.MOVETO
-# codes[-1] = mppath.Path.CLOSEPOLY
-# #Creating path and patches
-# fracPath = mppath.Path(fracLongsLatsEdge, codes)
-# fracPatch = mpatches.PathPatch(fracPath, fill=False, color='g', lw=2)
-# ax.add_patch(fracPatch)
-
-# lats, lons = [math.degrees(theta - math.pi/2) for theta in detectedThetaList], [math.degrees(phi - math.pi) for phi in detectedPhiList]
-# print(lons)
-# x, y = m(lons, lats)  # transform coordinates
-# ax.scatter(x, y, s = .1, c = 'r')
-# plt.show()

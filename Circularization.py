@@ -29,20 +29,6 @@ class Circularization:
          2). [[list(tuples), mppath.Path], [list(tuples), mppath.Path]] fractional cut and uncut respectively
         """
 
-        def chaikins_corner_cutting(coords, refinements=1):
-            coords = np.array(coords)
-
-            for _ in range(refinements):
-                L = coords.repeat(2, axis=0)
-                R = np.empty_like(L)
-                R[0] = L[0]
-                R[2::2] = L[1:-1:2]
-                R[1:-1:2] = L[2::2]
-                R[-1] = L[-1]
-                coords = L * 0.75 + R * 0.25
-
-            return coords
-
         def closest_node(node, nodes):
 
             """ returns closest node using dot vectorization, slightly faster see https://codereview.stackexchange.com/questions/28207/finding-the-closest-point-to-a-list-of-points """
@@ -294,6 +280,100 @@ class Circularization:
             indexMaxI, indexMaxJ = np.unravel_index(clusterHullVertM.argmax(), clusterHullVertM.shape)
             valToRem = clusterHullList[indexMaxI][indexMaxJ]
             sortedClusterDict[indexMaxI].remove(valToRem)
+
+            # #Testing
+            # fig, ax = plt.subplots()
+
+            # x, y = zip(*self.points)
+            # ax.scatter(x, y, s = 1, c='b')
+            # for i in range(0, nClusters):
+            #     hull =  ConvexHull(sortedClusterDict[i])
+            #     hullVertices = [sortedClusterDict[i][vertex] for vertex in hull.vertices]
+            #     x,y = zip(*hullVertices)
+            #     plt.xlim([-6, 6])
+            #     plt.ylim([-6, 6])
+            #     ax.scatter(x,y, c='r', label = np.amax(clusterHullVertM), s=4)
+
+            #     codes = [mppath.Path.LINETO] * len(hullVertices)
+            #     codes[0] = mppath.Path.MOVETO
+            #     codes[-1] = mppath.Path.CLOSEPOLY
+            #     path = mppath.Path(hullVertices, codes)
+            #     path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+            #     ax.add_patch(path)
+                
+            # plt.legend()
+            # plt.savefig("Frames/Frame_{0:03d}".format(k))
+            # plt.close()
+            # #Testing
+
+        return sortedClusterDict
+
+    def greedyAngleHeuristicMultiModal(self, nClusters, minSharpness):
+        
+        ''' See file:///home/n/Downloads/Setup/9449-Fadallah.pdf greedy heuristic '''
+
+        #Inits
+        criticalValue = 1 - self.detectionFraction
+        fracPoints = self.points
+
+        #K-means clustering
+        kmeans = KMeans(n_clusters = nClusters, random_state = 0).fit(self.points)
+        
+        #Creating dictionary which determines 
+        sortedClusterDict = {i:[] for i in range(0, nClusters)}
+        for i, cluster in enumerate(kmeans.predict(self.points)):
+            sortedClusterDict[cluster].append(self.points[i])
+
+        for k in range(0, math.floor(self.detectionFraction * self.numPoints)):
+                        
+            clusterHullList, maxLen = [], 0
+            for i in range(0, nClusters):
+
+                clusterPoints = sortedClusterDict[i]
+                
+                #Creating convex hull and calculating vertices
+                hull = ConvexHull(clusterPoints)
+                hullVertices = [clusterPoints[vertex] for vertex in hull.vertices]
+                clusterHullList.append(hullVertices)
+
+                #Finding max length of vertices
+                if len(hullVertices) > maxLen:
+                    maxLen = len(hullVertices)
+            
+            #Going through all clusters and finding angles
+            clusterHullAngleArray = np.zeros([len(clusterHullList), maxLen])
+            for i, clusterHull in enumerate(clusterHullList):
+                for j in range(0, len(clusterHull)):
+                    angle = angleBetweenPoints(j ,clusterHull)
+                    clusterHullAngleArray[i, j] = angle
+
+            if np.amin(clusterHullAngleArray) < minSharpness:
+                indexMinI, indexMinJ = np.unravel_index(clusterHullAngleArray.argmin(), clusterHullAngleArray.shape)
+                print(clusterHullList)
+                print(indexMinI, indexMinJ)
+                valToRem = clusterHullList[indexMinI][indexMinJ - 1]
+                sortedClusterDict[indexMinI].remove(valToRem)
+
+            else:
+
+                clusterHullVertM = np.zeros([len(clusterHullList), maxLen])
+                #Go through all the clusters
+                for i, clusterHull in enumerate(clusterHullList):
+                    for j in range(0, len(clusterHull)):
+                        areaBefore = PolyArea(clusterHull)
+                        element = clusterHull[j]
+                        clusterHull.pop(j)
+                        areaAfter = PolyArea(clusterHull)
+                        diffArea = areaBefore - areaAfter
+                        
+                        clusterHullVertM[i, j] = diffArea
+
+                        clusterHull.insert(j, element)
+
+                #Delete point which has the largest areal difference    
+                indexMaxI, indexMaxJ = np.unravel_index(clusterHullVertM.argmax(), clusterHullVertM.shape)
+                valToRem = clusterHullList[indexMaxI][indexMaxJ]
+                sortedClusterDict[indexMaxI].remove(valToRem)
 
             # #Testing
             # fig, ax = plt.subplots()

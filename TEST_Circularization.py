@@ -10,13 +10,13 @@ points2 = [list(element) for element in points2]
 points3 = [list(element) for element in points3]
 
 bimodalDist = points1 + points2
-points = points3
+points = bimodalDist
 # xPoints, yPoints = zip(*points)
 # plt.scatter(xPoints, yPoints)
 # plt.show()
 
 testCirculizer = Circularization(points, .5)
-greedHeur = testCirculizer.greedyHeuristicUniModal()
+greedHeur = testCirculizer.greedyAngleHeuristicMultiModal(2, math.pi/2)
 hull = ConvexHull(points)
 hullVertices = [points[vertex] for vertex in hull.vertices] 
 x, y = zip(*hullVertices)
@@ -28,4 +28,3 @@ plt.scatter(xPoints, yPoints, s=1)
 plt.xlim([-1, 1])
 plt.ylim([-1, 1])
 plt.show()    
-Testing
