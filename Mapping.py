@@ -11,6 +11,7 @@ import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
 from Circularization import *
 from MiscFunctions import *
+from scipy import interpolate 
 
 cwd = os.getcwd()
 sys.path.insert(0, os.path.join(cwd, "Main", "Images"))
@@ -91,13 +92,14 @@ detectedLatList = [math.degrees(theta - math.pi/2) for theta in detectedThetaLis
 detectedLonLatList = list(zip(detectedLonList, detectedLatList))
 
 #Fractional items 
-detectionFractionList = [.3, .5, .9]
+detectionFractionList = [.3, .5, .8]
+sharpnessList = [2.3, 2.3, 2]
 numFrac = len(detectionFractionList)
 clusterDictDict = {}
-for detectionFraction in detectionFractionList:
+for i, detectionFraction in enumerate(detectionFractionList):
     frac = Circularization(detectedLonLatList, detectionFraction)
     nClusters = 2
-    clusterDict = frac.greedyAngleHeuristicMultiModal(nClusters, 2.3)
+    clusterDict = frac.greedyAngleHeuristicMultiModal(nClusters, sharpnessList[i])
     clusterDictDict[detectionFraction] = clusterDict
 
 #Edge points, also applies corner cutting
@@ -108,15 +110,27 @@ for detectionFraction in detectionFractionList:
     for i in range(0, nClusters):
         hull =  ConvexHull(clusterDict[i])
         hullVertices = [clusterDict[i][vertex] for vertex in hull.vertices]
-        cutHullVertices = chaikins_corner_cutting(hullVertices, 15)
-        edgePointsList.append(cutHullVertices) #Cut hull vertieices is a list itself!
+        x, y = zip(*hullVertices)
+        # orig_len = len(x)
+        # x = x[-3:-1] + x + x[1:3]
+        # y = y[-3:-1] + y + y[1:3]
+
+        # t = np.arange(len(x))
+        # ti = np.linspace(2, orig_len + 1, 10 * orig_len)
+
+        # xi = interpolate.interp1d(t, x, kind='cubic')(ti)
+        # yi = interpolate.interp1d(t, y, kind='cubic')(ti)
+        
+        interptHullVertices = list(zip(x, y)) 
+
+        cutHullVertices = chaikins_corner_cutting(interptHullVertices, 10)
+        edgePointsList.append(interptHullVertices) #Cut hull vertieices is a list itself!
     fracEdgePointsDict[detectionFraction] = edgePointsList
 
-#Creating paths
-fracLonLatEdgePathDict = {}
-for detectionFraction in detectionFractionList:
-
-    fracLonLatEdgePathList = []
+#Creating paths patches and plotting them
+ecList = ['orange', 'green', 'blue']
+for i, detectionFraction in enumerate(detectionFractionList):
+    edgePointsList = fracEdgePointsDict[detectionFraction]
     for fracLonLatEdgePoints in edgePointsList:
         x,y = zip(*fracLonLatEdgePoints)
         x,y = m(x,y)
@@ -127,8 +141,7 @@ for detectionFraction in detectionFractionList:
         codes[-1] = mppath.Path.CLOSEPOLY
 
         path = mppath.Path(fracLonLatEdgePointsT, codes) 
-        patch = mpatches.PathPatch(path, lw=2, fill=False, ec = 'orange')
-        #poly = Polygon(fracLonLatEdgePointsT, c = 'g', fill = False)
+        patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = detectionFraction)
         ax.add_patch(patch)
 
 #Plotting
