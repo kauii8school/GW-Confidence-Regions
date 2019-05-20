@@ -41,7 +41,7 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 1e6
+approxTotalEvents = 1e5
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
@@ -53,7 +53,7 @@ eventList = []
 for i, distance in enumerate(distanceList):
     for j in range(0, numEventsAtDistance[i]):
         theta, phi, psi = random.uniform(0, math.pi), random.uniform(
-            0, 2 * math.pi), random.uniform(-math.pi, math.pi)
+            0 + .00001, 2 * math.pi - .00001), random.uniform(-math.pi, math.pi)
         eventList.append(Event(theta, phi, psi, distance))
 
 detectedEventList = []
@@ -81,7 +81,7 @@ fig, ax = plt.subplots()
 
 #Globemap
 m = Basemap(projection='hammer',lon_0=0,resolution='c')
-#m = Basemap(projection='ortho',lat_0=45,lon_0=-130,resolution='l')
+# m = Basemap(projection='ortho',lat_0=45,lon_0=130,resolution='l')
 m.bluemarble(scale = .2)
 
 #For testing purposes
@@ -91,40 +91,50 @@ detectedLatList = [math.degrees(theta - math.pi/2) for theta in detectedThetaLis
 detectedLonLatList = list(zip(detectedLonList, detectedLatList))
 
 #Fractional items 
-detectionFraction = .5
-frac50 = Circularization(detectedLonLatList, detectionFraction)
-nClusters = 2
-clusterDict = frac50.greedyHeuristicMultiModal(nClusters)
+detectionFractionList = [.3, .5, .9]
+numFrac = len(detectionFractionList)
+clusterDictDict = {}
+for detectionFraction in detectionFractionList:
+    frac = Circularization(detectedLonLatList, detectionFraction)
+    nClusters = 2
+    clusterDict = frac.greedyAngleHeuristicMultiModal(nClusters, 2.3)
+    clusterDictDict[detectionFraction] = clusterDict
 
 #Edge points, also applies corner cutting
-edgePointsList = []
-for i in range(0, nClusters):
-    hull =  ConvexHull(clusterDict[i])
-    hullVertices = [clusterDict[i][vertex] for vertex in hull.vertices]
-    cutHullVertices = chaikins_corner_cutting(hullVertices, 15)
-    edgePointsList.append(cutHullVertices)
+fracEdgePointsDict = {}
+for detectionFraction in detectionFractionList:
+    edgePointsList = []
+    clusterDict = clusterDictDict[detectionFraction]
+    for i in range(0, nClusters):
+        hull =  ConvexHull(clusterDict[i])
+        hullVertices = [clusterDict[i][vertex] for vertex in hull.vertices]
+        cutHullVertices = chaikins_corner_cutting(hullVertices, 15)
+        edgePointsList.append(cutHullVertices) #Cut hull vertieices is a list itself!
+    fracEdgePointsDict[detectionFraction] = edgePointsList
 
 #Creating paths
-fracLonLatEdgePathList = []
-for fracLonLatEdgePoints in edgePointsList:
-    x,y = zip(*fracLonLatEdgePoints)
-    x,y = m(x,y)
-    fracLonLatEdgePointsT = list(zip(x,y))
+fracLonLatEdgePathDict = {}
+for detectionFraction in detectionFractionList:
 
-    codes = [mppath.Path.LINETO] * len(fracLonLatEdgePointsT)
-    codes[0] = mppath.Path.MOVETO
-    codes[-1] = mppath.Path.CLOSEPOLY
+    fracLonLatEdgePathList = []
+    for fracLonLatEdgePoints in edgePointsList:
+        x,y = zip(*fracLonLatEdgePoints)
+        x,y = m(x,y)
+        fracLonLatEdgePointsT = list(zip(x,y))
 
-    path = mppath.Path(fracLonLatEdgePointsT, codes) 
-    patch = mpatches.PathPatch(path, lw=2, fill=False, ec = 'orange')
-    #poly = Polygon(fracLonLatEdgePointsT, c = 'g', fill = False)
-    plt.gca().add_patch(patch)
+        codes = [mppath.Path.LINETO] * len(fracLonLatEdgePointsT)
+        codes[0] = mppath.Path.MOVETO
+        codes[-1] = mppath.Path.CLOSEPOLY
+
+        path = mppath.Path(fracLonLatEdgePointsT, codes) 
+        patch = mpatches.PathPatch(path, lw=2, fill=False, ec = 'orange')
+        #poly = Polygon(fracLonLatEdgePointsT, c = 'g', fill = False)
+        ax.add_patch(patch)
 
 #Plotting
 #Plotting detections
 detectedLonList, detectedLatList = m(detectedLonList, detectedLatList)
 m.scatter(detectedLonList, detectedLatList, s = .5, c='r')
-
 
 
 #Plotting Detectors

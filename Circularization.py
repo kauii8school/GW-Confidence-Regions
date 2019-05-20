@@ -373,30 +373,30 @@ class Circularization:
                 valToRem = clusterHullList[indexMaxI][indexMaxJ]
                 sortedClusterDict[indexMaxI].remove(valToRem)
 
-            #Testing
-            fig, ax = plt.subplots()
+            # #Testing
+            # fig, ax = plt.subplots()
 
-            x, y = zip(*self.points)
-            ax.scatter(x, y, s = 1, c='b')
-            for i in range(0, nClusters):
-                hull =  ConvexHull(sortedClusterDict[i])
-                hullVertices = [sortedClusterDict[i][vertex] for vertex in hull.vertices]
-                x,y = zip(*hullVertices)
-                plt.xlim([-6, 6])
-                plt.ylim([-6, 6])
-                ax.scatter(x,y, c='r', label = np.amin(clusterHullAngleArray), s=4)
+            # x, y = zip(*self.points)
+            # ax.scatter(x, y, s = 1, c='b')
+            # for i in range(0, nClusters):
+            #     hull =  ConvexHull(sortedClusterDict[i])
+            #     hullVertices = [sortedClusterDict[i][vertex] for vertex in hull.vertices]
+            #     x,y = zip(*hullVertices)
+            #     plt.xlim([-6, 6])
+            #     plt.ylim([-6, 6])
+            #     ax.scatter(x,y, c='r', label = np.amin(clusterHullAngleArray), s=4)
 
-                codes = [mppath.Path.LINETO] * len(hullVertices)
-                codes[0] = mppath.Path.MOVETO
-                codes[-1] = mppath.Path.CLOSEPOLY
-                path = mppath.Path(hullVertices, codes)
-                path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
-                ax.add_patch(path)
+            #     codes = [mppath.Path.LINETO] * len(hullVertices)
+            #     codes[0] = mppath.Path.MOVETO
+            #     codes[-1] = mppath.Path.CLOSEPOLY
+            #     path = mppath.Path(hullVertices, codes)
+            #     path = mpatches.PathPatch(path, fill=False, color='r', lw=1)
+            #     ax.add_patch(path)
                 
-            plt.legend()
-            plt.savefig("Frames/Frame_{0:03d}".format(k))
-            plt.close()
-            #Testing
+            # plt.legend()
+            # plt.savefig("Frames/Frame_{0:03d}".format(k))
+            # plt.close()
+            # #Testing
 
         return sortedClusterDict
 
