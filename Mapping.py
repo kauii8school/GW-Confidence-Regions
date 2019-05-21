@@ -12,6 +12,7 @@ from mpl_toolkits.basemap import Basemap
 from Circularization import *
 from MiscFunctions import *
 from scipy import interpolate 
+from collections import OrderedDict
 
 cwd = os.getcwd()
 sys.path.insert(0, os.path.join(cwd, "Main", "Images"))
@@ -31,7 +32,6 @@ class Event:
         self.distance = _distance
         self.thetaPhiPoint = (self.theta, self.phi)
 
-
 # Finding how many events at each distance
 k = 1
 maxDistance = 170
@@ -42,7 +42,7 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 1e5
+approxTotalEvents = 1e6
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
@@ -54,7 +54,7 @@ eventList = []
 for i, distance in enumerate(distanceList):
     for j in range(0, numEventsAtDistance[i]):
         theta, phi, psi = random.uniform(0, math.pi), random.uniform(
-            0 + .00001, 2 * math.pi - .00001), random.uniform(-math.pi, math.pi)
+            0, 2 * math.pi), random.uniform(-math.pi, math.pi)
         eventList.append(Event(theta, phi, psi, distance))
 
 detectedEventList = []
@@ -81,9 +81,9 @@ detectedXYPoints = [event.XYPoint for event in detectedEventList]
 fig, ax = plt.subplots()
 
 #Globemap
-m = Basemap(projection='hammer',lon_0=0,resolution='c')
+m = Basemap(projection='hammer',lon_0=-1,resolution='c')
 # m = Basemap(projection='ortho',lat_0=45,lon_0=130,resolution='l')
-m.bluemarble(scale = .2)
+m.bluemarble(scale = 1)
 
 #For testing purposes
 #Transforming to to lattitude and longitude coordinates
@@ -92,8 +92,8 @@ detectedLatList = [math.degrees(theta - math.pi/2) for theta in detectedThetaLis
 detectedLonLatList = list(zip(detectedLonList, detectedLatList))
 
 #Fractional items 
-detectionFractionList = [.3, .5, .8]
-sharpnessList = [2.3, 2.3, 2]
+detectionFractionList = [round((1 - .3), 1), round((1 - .5), 1), round((1 - .9), 1)]
+sharpnessList = [2.3, 2.3, 2.3]
 numFrac = len(detectionFractionList)
 clusterDictDict = {}
 for i, detectionFraction in enumerate(detectionFractionList):
@@ -104,36 +104,43 @@ for i, detectionFraction in enumerate(detectionFractionList):
 
 #Edge points, also applies corner cutting
 fracEdgePointsDict = {}
+fracAreaDict = {}
+
 for detectionFraction in detectionFractionList:
     edgePointsList = []
     clusterDict = clusterDictDict[detectionFraction]
+    areaList = []
     for i in range(0, nClusters):
         hull =  ConvexHull(clusterDict[i])
-        hullVertices = [clusterDict[i][vertex] for vertex in hull.vertices]
-        x, y = zip(*hullVertices)
-        # orig_len = len(x)
-        # x = x[-3:-1] + x + x[1:3]
-        # y = y[-3:-1] + y + y[1:3]
+        hullVertices = np.array([clusterDict[i][vertex] for vertex in hull.vertices])
 
-        # t = np.arange(len(x))
-        # ti = np.linspace(2, orig_len + 1, 10 * orig_len)
+        #Corner cutting
+        #cutHullVertices = chaikins_corner_cutting(hullVertices, 12)
 
-        # xi = interpolate.interp1d(t, x, kind='cubic')(ti)
-        # yi = interpolate.interp1d(t, y, kind='cubic')(ti)
-        
-        interptHullVertices = list(zip(x, y)) 
+        #Interpolated curves
+        tck, u = interpolate.splprep(hullVertices.T, u=None, s=500, per=1) 
+        u_new = np.linspace(u.min(), u.max(), 10000)
+        xNew, yNew = interpolate.splev(u_new, tck, der=0)
 
-        cutHullVertices = chaikins_corner_cutting(interptHullVertices, 10)
+        #Calculating area
+        areaList.append(0)
+
+        interptHullVertices = list(zip(xNew, yNew))
+
         edgePointsList.append(interptHullVertices) #Cut hull vertieices is a list itself!
+    
+    #fracAreaDict[detectionFraction] = sum(areaList) / totalPossArea
     fracEdgePointsDict[detectionFraction] = edgePointsList
 
 #Creating paths patches and plotting them
 ecList = ['orange', 'green', 'blue']
 for i, detectionFraction in enumerate(detectionFractionList):
     edgePointsList = fracEdgePointsDict[detectionFraction]
-    for fracLonLatEdgePoints in edgePointsList:
+    for j, fracLonLatEdgePoints in enumerate(edgePointsList):
         x,y = zip(*fracLonLatEdgePoints)
         x,y = m(x,y)
+
+        #7.5e6
         fracLonLatEdgePointsT = list(zip(x,y))
 
         codes = [mppath.Path.LINETO] * len(fracLonLatEdgePointsT)
@@ -141,8 +148,10 @@ for i, detectionFraction in enumerate(detectionFractionList):
         codes[-1] = mppath.Path.CLOSEPOLY
 
         path = mppath.Path(fracLonLatEdgePointsT, codes) 
-        patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = detectionFraction)
+        #patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = "detection fraction-{}   fraction of earth-{}".format(round(1 - detectionFraction, 1), fracAreaDict[detectionFraction]))
+        patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = "detection fraction-{}".format(round(1 - detectionFraction, 1)))
         ax.add_patch(patch)
+        m.scatter(x, y, c='k', s=7)
 
 #Plotting
 #Plotting detections
@@ -154,8 +163,12 @@ m.scatter(detectedLonList, detectedLatList, s = .5, c='r')
 WashingtonLat, WashingtonLon = m(math.degrees(lambd_WASH), math.degrees(beta_WASH))
 LouisianaLat, LouisianaLon = m(math.degrees(lambd_LOUIS), math.degrees(beta_LOUIS))
 VirgoLat, VrigoLon = m(math.degrees(lambd_VIRGO), math.degrees(beta_VIRGO))
-ax.scatter(WashingtonLat, WashingtonLon, c='y', s=4)
-ax.scatter(LouisianaLat, LouisianaLon, c='y', s=4)
-ax.scatter(VirgoLat, VrigoLon, c='y', s=4)
+ax.scatter(WashingtonLat, WashingtonLon, c='y', s=7)
+ax.scatter(LouisianaLat, LouisianaLon, c='y', s=7)
+ax.scatter(VirgoLat, VrigoLon, c='y', s=7)
 
+
+handles, labels = plt.gca().get_legend_handles_labels()
+by_label = OrderedDict(zip(labels, handles))
+plt.legend(by_label.values(), by_label.keys(), loc = 2)
 plt.show()

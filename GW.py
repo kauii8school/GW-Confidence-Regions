@@ -171,7 +171,6 @@ Washington = GWDetector(WashingtonDict["beta"], WashingtonDict["lambd"], Washing
 Louisiana = GWDetector(LouisianaDict["beta"], LouisianaDict["lambd"], LouisianaDict["chi"], LouisianaDict["eta"], LouisianaDict["name"], LouisianaDict["visibility distance"])
 
 detectorToTest = Virgo
-print(detectorToTest.beta, detectorToTest.lambd, detectorToTest.chi)
 
 detectorDictList = [VirgoDict, WashingtonDict, LouisianaDict]
 earthDetectorNetwork = GWDetectorNetwork(detectorDictList)

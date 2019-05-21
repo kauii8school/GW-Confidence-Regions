@@ -1,4 +1,6 @@
 import numpy as np
+import math
+from scipy import interpolate
 
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
     """ Makes progress Bar """  
@@ -35,3 +37,21 @@ def chaikins_corner_cutting(coords, refinements=1):
         coords = L * 0.75 + R * 0.25
 
     return coords
+
+def PolyArea(x, y):
+    return 0.5*np.abs(np.dot(x,np.roll(y,1))-np.dot(y,np.roll(x,1)))
+
+
+def projectionArea(tck, u):
+
+    delta = 2
+    u_new = np.arange(u.min(), u.max(), delta)
+    xNew, yNew = interpolate.splev(u_new, tck, der=0)
+
+    print(xNew)
+    print()
+    print(yNew)
+
+    total = 0
+    for theta in thetaList:
+            math.cos(theta) * delta
