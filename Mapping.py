@@ -81,8 +81,7 @@ detectedXYPoints = [event.XYPoint for event in detectedEventList]
 fig, ax = plt.subplots()
 
 #Globemap
-m = Basemap(projection='hammer',lon_0=-1,resolution='c')
-# m = Basemap(projection='ortho',lat_0=45,lon_0=130,resolution='l')
+m = Basemap(projection='hammer',lon_0=0,resolution='c')
 m.bluemarble(scale = 1)
 
 #For testing purposes
@@ -92,7 +91,7 @@ detectedLatList = [math.degrees(theta - math.pi/2) for theta in detectedThetaLis
 detectedLonLatList = list(zip(detectedLonList, detectedLatList))
 
 #Fractional items 
-detectionFractionList = [round((1 - .3), 1), round((1 - .5), 1), round((1 - .9), 1)]
+detectionFractionList = [.3, .5, .9]
 sharpnessList = [2.3, 2.3, 2.3]
 numFrac = len(detectionFractionList)
 clusterDictDict = {}
@@ -105,7 +104,6 @@ for i, detectionFraction in enumerate(detectionFractionList):
 #Edge points, also applies corner cutting
 fracEdgePointsDict = {}
 fracAreaDict = {}
-
 for detectionFraction in detectionFractionList:
     edgePointsList = []
     clusterDict = clusterDictDict[detectionFraction]
@@ -140,8 +138,19 @@ for i, detectionFraction in enumerate(detectionFractionList):
         x,y = zip(*fracLonLatEdgePoints)
         x,y = m(x,y)
 
-        #7.5e6
-        fracLonLatEdgePointsT = list(zip(x,y))
+
+        if detectionFraction >= .8 and j == 1:
+            fracLonLatEdgePointsT = list(zip(x, y))
+            fracLonLatEdgePointsT = [val for val in fracLonLatEdgePointsT if val[0] > 1e7]
+
+            temp = [val for val in fracLonLatEdgePointsT if val[0] < 1e7]
+
+            path = mppath.Path(temp) 
+            patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = "detection fraction-{}".format(round(1 - detectionFraction, 1)))
+            ax.add_patch(patch)
+
+        else:
+            fracLonLatEdgePointsT = list(zip(x,y))
 
         codes = [mppath.Path.LINETO] * len(fracLonLatEdgePointsT)
         codes[0] = mppath.Path.MOVETO

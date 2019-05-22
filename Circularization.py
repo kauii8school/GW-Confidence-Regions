@@ -12,10 +12,10 @@ class Circularization:
     
     ''' Class which finds the optimal circle containing the appropriate amount of points. '''
 
-    def __init__(self, _points, _detectionFraction):
+    def __init__(self, _points, alpha):
 
         self.points = _points
-        self.detectionFraction = _detectionFraction
+        self.detectionFraction = 1 - alpha
         self.numPoints = len(self.points)
         
     def getFractionalItems(self, startingPoint, returnFmt = 0, refinements = 1):
