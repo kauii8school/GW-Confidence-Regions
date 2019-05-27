@@ -42,7 +42,7 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 1e6
+approxTotalEvents = 1e5
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
@@ -81,7 +81,7 @@ detectedXYPoints = [event.XYPoint for event in detectedEventList]
 fig, ax = plt.subplots()
 
 #Globemap
-m = Basemap(projection='hammer',lon_0=0,resolution='c')
+m = Basemap(projection='robin',lon_0=0,resolution='c')
 m.bluemarble(scale = 1)
 
 #For testing purposes
@@ -91,7 +91,7 @@ detectedLatList = [math.degrees(theta - math.pi/2) for theta in detectedThetaLis
 detectedLonLatList = list(zip(detectedLonList, detectedLatList))
 
 #Fractional items 
-detectionFractionList = [.3, .5, .9]
+detectionFractionList = [.33, .5, .66]
 sharpnessList = [2.3, 2.3, 2.3]
 numFrac = len(detectionFractionList)
 clusterDictDict = {}
@@ -104,6 +104,7 @@ for i, detectionFraction in enumerate(detectionFractionList):
 #Edge points, also applies corner cutting
 fracEdgePointsDict = {}
 fracAreaDict = {}
+totalPossArea = 510.1e12
 for detectionFraction in detectionFractionList:
     edgePointsList = []
     clusterDict = clusterDictDict[detectionFraction]
@@ -112,22 +113,19 @@ for detectionFraction in detectionFractionList:
         hull =  ConvexHull(clusterDict[i])
         hullVertices = np.array([clusterDict[i][vertex] for vertex in hull.vertices])
 
-        #Corner cutting
-        #cutHullVertices = chaikins_corner_cutting(hullVertices, 12)
-
         #Interpolated curves
-        tck, u = interpolate.splprep(hullVertices.T, u=None, s=500, per=1) 
+        tck, u = interpolate.splprep(hullVertices.T, u=None, s=300, per=1) 
         u_new = np.linspace(u.min(), u.max(), 10000)
         xNew, yNew = interpolate.splev(u_new, tck, der=0)
 
         #Calculating area
-        areaList.append(0)
+        areaList.append(projectionArea(hullVertices))
 
         interptHullVertices = list(zip(xNew, yNew))
 
         edgePointsList.append(interptHullVertices) #Cut hull vertieices is a list itself!
     
-    #fracAreaDict[detectionFraction] = sum(areaList) / totalPossArea
+    fracAreaDict[detectionFraction] = sum(areaList) / totalPossArea
     fracEdgePointsDict[detectionFraction] = edgePointsList
 
 #Creating paths patches and plotting them
@@ -135,18 +133,22 @@ ecList = ['orange', 'green', 'blue']
 for i, detectionFraction in enumerate(detectionFractionList):
     edgePointsList = fracEdgePointsDict[detectionFraction]
     for j, fracLonLatEdgePoints in enumerate(edgePointsList):
-        x,y = zip(*fracLonLatEdgePoints)
-        x,y = m(x,y)
+        lon, lat = zip(*fracLonLatEdgePoints)
 
+        x,y = m(lon,lat)
 
-        if detectionFraction >= .8 and j == 1:
-            fracLonLatEdgePointsT = list(zip(x, y))
-            fracLonLatEdgePointsT = [val for val in fracLonLatEdgePointsT if val[0] > 1e7]
+        print(detectionFraction, max(x), j, max(lon))
 
-            temp = [val for val in fracLonLatEdgePointsT if val[0] < 1e7]
+        #Not generalized but makes it so path doesn't go through middle of projection and instead around
+        if detectionFraction >= .7 and max(lon) < 300:
+            fracLonLatEdgePointsTemp = list(zip(x, y))
+            fracLonLatEdgePointsT = [val for val in fracLonLatEdgePointsTemp if val[0] < 1.5e7]
 
-            path = mppath.Path(temp) 
-            patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = "detection fraction-{}".format(round(1 - detectionFraction, 1)))
+            temp = [val for val in fracLonLatEdgePointsTemp if val[0] > 1.5e7]
+
+            x, y = zip(*temp)
+            path = mppath.Path(temp, closed=False, readonly = False) 
+            patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = "detection fraction-{}   area-{}".format(detectionFraction, round(fracAreaDict[detectionFraction], 3)))
             ax.add_patch(patch)
 
         else:
@@ -154,30 +156,30 @@ for i, detectionFraction in enumerate(detectionFractionList):
 
         codes = [mppath.Path.LINETO] * len(fracLonLatEdgePointsT)
         codes[0] = mppath.Path.MOVETO
-        codes[-1] = mppath.Path.CLOSEPOLY
+        codes[-1] = mppath.Path.STOP
 
-        path = mppath.Path(fracLonLatEdgePointsT, codes) 
-        #patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = "detection fraction-{}   fraction of earth-{}".format(round(1 - detectionFraction, 1), fracAreaDict[detectionFraction]))
-        patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = "detection fraction-{}".format(round(1 - detectionFraction, 1)))
+
+        path = mppath.Path(fracLonLatEdgePointsT, codes, closed=False, readonly = False) 
+        patch = mpatches.PathPatch(path, lw=2, fill=False, ec = ecList[i], label = "detection fraction: {}%   area: {}%".format(int(detectionFraction * 100), int(round(fracAreaDict[detectionFraction] * 100, 0))))
         ax.add_patch(patch)
-        m.scatter(x, y, c='k', s=7)
-
-#Plotting
-#Plotting detections
-detectedLonList, detectedLatList = m(detectedLonList, detectedLatList)
-m.scatter(detectedLonList, detectedLatList, s = .5, c='r')
 
 
-#Plotting Detectors
-WashingtonLat, WashingtonLon = m(math.degrees(lambd_WASH), math.degrees(beta_WASH))
-LouisianaLat, LouisianaLon = m(math.degrees(lambd_LOUIS), math.degrees(beta_LOUIS))
-VirgoLat, VrigoLon = m(math.degrees(lambd_VIRGO), math.degrees(beta_VIRGO))
-ax.scatter(WashingtonLat, WashingtonLon, c='y', s=7)
-ax.scatter(LouisianaLat, LouisianaLon, c='y', s=7)
-ax.scatter(VirgoLat, VrigoLon, c='y', s=7)
+# #Plotting
+# #Plotting detections
+# detectedLonList, detectedLatList = m(detectedLonList, detectedLatList)
+# m.scatter(detectedLonList, detectedLatList, s = .5, c='r')
+
+
+# #Plotting Detectors
+# WashingtonLat, WashingtonLon = m(math.degrees(lambd_WASH), math.degrees(beta_WASH))
+# LouisianaLat, LouisianaLon = m(math.degrees(lambd_LOUIS), math.degrees(beta_LOUIS))
+# VirgoLat, VrigoLon = m(math.degrees(lambd_VIRGO), math.degrees(beta_VIRGO))
+# ax.scatter(WashingtonLat, WashingtonLon, c='y', s=7)
+# ax.scatter(LouisianaLat, LouisianaLon, c='y', s=7)
+# ax.scatter(VirgoLat, VrigoLon, c='y', s=7)
 
 
 handles, labels = plt.gca().get_legend_handles_labels()
 by_label = OrderedDict(zip(labels, handles))
-plt.legend(by_label.values(), by_label.keys(), loc = 2)
+plt.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(0.11, 0.99), fontsize = 13)
 plt.show()

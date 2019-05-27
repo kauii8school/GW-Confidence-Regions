@@ -1,6 +1,10 @@
 import numpy as np
 import math
 from scipy import interpolate
+import pyproj
+from functools import partial
+from shapely.geometry import Polygon
+import shapely.ops as ops
 
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
     """ Makes progress Bar """  
@@ -41,17 +45,34 @@ def chaikins_corner_cutting(coords, refinements=1):
 def PolyArea(x, y):
     return 0.5*np.abs(np.dot(x,np.roll(y,1))-np.dot(y,np.roll(x,1)))
 
+def closest_node(node, nodes):
 
-def projectionArea(tck, u):
+    """ returns closest node using dot vectorization, slightly faster see https://codereview.stackexchange.com/questions/28207/finding-the-closest-point-to-a-list-of-points """
 
-    delta = 2
-    u_new = np.arange(u.min(), u.max(), delta)
-    xNew, yNew = interpolate.splev(u_new, tck, der=0)
+    if node in nodes:
+        nodes.remove(node)
 
-    print(xNew)
-    print()
-    print(yNew)
+    nodes = np.asarray(nodes)
+    deltas = nodes - node
+    dist_2 = np.einsum('ij,ij->i', deltas, deltas)
+    temp = nodes[np.argmin(dist_2)]
+    return (temp[0], temp[1])
 
-    total = 0
-    for theta in thetaList:
-            math.cos(theta) * delta
+def projectionArea(points):
+
+    """ https://stackoverflow.com/questions/51554602/how-do-i-get-the-area-of-a-geojson-polygon-with-python?rq=1 """
+
+    polygon = Polygon(points)
+
+    geom_area = ops.transform(
+        partial(
+            pyproj.transform,
+            pyproj.Proj(init='EPSG:4326'),
+            pyproj.Proj(
+                proj='aea',
+                lat1=polygon.bounds[1],
+                lat2=polygon.bounds[3])),
+        polygon)
+    
+    print(geom_area.area)
+    return geom_area.area
