@@ -42,7 +42,7 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 1e5
+approxTotalEvents = 3e6
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
@@ -129,15 +129,13 @@ for detectionFraction in detectionFractionList:
     fracEdgePointsDict[detectionFraction] = edgePointsList
 
 #Creating paths patches and plotting them
-ecList = ['orange', 'green', 'blue']
+ecList = ['darkred', 'red', 'orange']
 for i, detectionFraction in enumerate(detectionFractionList):
     edgePointsList = fracEdgePointsDict[detectionFraction]
     for j, fracLonLatEdgePoints in enumerate(edgePointsList):
         lon, lat = zip(*fracLonLatEdgePoints)
 
         x,y = m(lon,lat)
-
-        print(detectionFraction, max(x), j, max(lon))
 
         #Not generalized but makes it so path doesn't go through middle of projection and instead around
         if detectionFraction >= .7 and max(lon) < 300:
@@ -171,15 +169,33 @@ for i, detectionFraction in enumerate(detectionFractionList):
 
 
 # #Plotting Detectors
-# WashingtonLat, WashingtonLon = m(math.degrees(lambd_WASH), math.degrees(beta_WASH))
-# LouisianaLat, LouisianaLon = m(math.degrees(lambd_LOUIS), math.degrees(beta_LOUIS))
-# VirgoLat, VrigoLon = m(math.degrees(lambd_VIRGO), math.degrees(beta_VIRGO))
-# ax.scatter(WashingtonLat, WashingtonLon, c='y', s=7)
-# ax.scatter(LouisianaLat, LouisianaLon, c='y', s=7)
-# ax.scatter(VirgoLat, VrigoLon, c='y', s=7)
+zorderDetectors = 10
+detectorColor = 'yellow'
+fontSize = 15
+WashingtonLat, WashingtonLon = m(math.degrees(lambd_WASH), math.degrees(beta_WASH))
+LouisianaLat, LouisianaLon = m(math.degrees(lambd_LOUIS), math.degrees(beta_LOUIS))
+VirgoLat, VirgoLon = m(math.degrees(lambd_VIRGO), math.degrees(beta_VIRGO))
 
+ax.annotate("LIGO Hanford", (WashingtonLat + 2e5, WashingtonLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
+ax.scatter(WashingtonLat, WashingtonLon, c=detectorColor, s=11, zorder=zorderDetectors)
+ax.annotate("LIGO Livingston", (LouisianaLat + 2e5, LouisianaLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
+ax.scatter(LouisianaLat, LouisianaLon, c=detectorColor, s=11, zorder=zorderDetectors)
+ax.annotate("VIRGO", (VirgoLat + 2e5, VirgoLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
+ax.scatter(VirgoLat, VirgoLon, c=detectorColor, s=11, zorder=zorderDetectors)
+
+beta_Cheren_S = math.radians(GWDetector.DMS_TO_DEGREES(-24,-41,-.34))
+lambd_Cheren_S = math.radians(GWDetector.DMS_TO_DEGREES(-70,-18,-58.84))
+CherenSLat, CherenSLon = m(math.degrees(lambd_Cheren_S), math.degrees(beta_Cheren_S))
+ax.annotate("CTA North", (CherenSLat + 2e5, CherenSLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
+ax.scatter(CherenSLat, CherenSLon, c=detectorColor, s=25, marker='*', zorder=zorderDetectors)
+
+beta_Cheren_N = math.radians(GWDetector.DMS_TO_DEGREES(28,45,43.7904))
+lambd_Cheren_N = math.radians(GWDetector.DMS_TO_DEGREES(-17,-53,-31.218))
+CherenSLat, CherenSLon = m(math.degrees(lambd_Cheren_N), math.degrees(beta_Cheren_N))
+ax.annotate("CTA South", (CherenSLat + 2e5, CherenSLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
+ax.scatter(CherenSLat, CherenSLon, c=detectorColor, s=25, marker='*', zorder=zorderDetectors)
 
 handles, labels = plt.gca().get_legend_handles_labels()
 by_label = OrderedDict(zip(labels, handles))
-plt.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(0.11, 0.99), fontsize = 13)
+plt.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(0.09, 0.96), fontsize = 9)
 plt.show()

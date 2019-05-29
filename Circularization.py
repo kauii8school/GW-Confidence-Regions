@@ -317,7 +317,7 @@ class Circularization:
         fracPoints = self.points
 
         #K-means clustering
-        kmeans = KMeans(n_clusters = nClusters, random_state = 0).fit(self.points)
+        kmeans = KMeans(n_clusters = nClusters, random_state = 0, algorithm='full', precompute_distances=False).fit(self.points)
         
         #Creating dictionary which determines 
         sortedClusterDict = {i:[] for i in range(0, nClusters)}
