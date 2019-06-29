@@ -13,6 +13,7 @@ from Circularization import *
 from MiscFunctions import *
 from scipy import interpolate 
 from collections import OrderedDict
+from pathlib import Path
 
 cwd = os.getcwd()
 sys.path.insert(0, os.path.join(cwd, "Main", "Images"))
@@ -42,7 +43,7 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 3e6
+approxTotalEvents = 5e4
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
@@ -197,5 +198,11 @@ ax.scatter(CherenSLat, CherenSLon, c=detectorColor, s=25, marker='*', zorder=zor
 
 handles, labels = plt.gca().get_legend_handles_labels()
 by_label = OrderedDict(zip(labels, handles))
-plt.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(0.09, 0.96), fontsize = 9)
+plt.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(0.45, 0.2), fontsize = 13)
 plt.show()
+
+
+fn = Path('/home/n/Documents/Research/GW-Contour-Mapping/Map.svg').expanduser()
+plt.draw() # necessary to render figure before saving
+fig.savefig(fn, bbox_inches='tight')
+
