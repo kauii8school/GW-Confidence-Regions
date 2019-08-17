@@ -1,3 +1,5 @@
+#I CHANGED MY VAR NAMING STYLE MIDDAY SORRY, I"M VERY USED TO CAMELCASE BUT AFTER PROGRAMMING IN PYTHON FOR SO LONG EVERYONE USES _ ):
+
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,6 +35,9 @@ class Event:
         self.distance = _distance
         self.thetaPhiPoint = (self.theta, self.phi)
 
+#Setting seed
+random.seed(31)
+
 # Finding how many events at each distance
 k = 1
 maxDistance = 170
@@ -43,7 +48,7 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 5e4
+approxTotalEvents = 7e6
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
@@ -163,38 +168,65 @@ for i, detectionFraction in enumerate(detectionFractionList):
         ax.add_patch(patch)
 
 
-# #Plotting
-# #Plotting detections
-# detectedLonList, detectedLatList = m(detectedLonList, detectedLatList)
-# m.scatter(detectedLonList, detectedLatList, s = .5, c='r')
-
-
-# #Plotting Detectors
+#Plotting Detectors
 zorderDetectors = 10
-detectorColor = 'yellow'
+gw_detector_color = 'magenta'
 fontSize = 15
 WashingtonLat, WashingtonLon = m(math.degrees(lambd_WASH), math.degrees(beta_WASH))
 LouisianaLat, LouisianaLon = m(math.degrees(lambd_LOUIS), math.degrees(beta_LOUIS))
 VirgoLat, VirgoLon = m(math.degrees(lambd_VIRGO), math.degrees(beta_VIRGO))
+KAGRALat, KAGRALon = m(math.degrees(lambd_KAGRA), math.degrees(beta_KAGRA))
 
-ax.annotate("LIGO Hanford", (WashingtonLat + 2e5, WashingtonLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
-ax.scatter(WashingtonLat, WashingtonLon, c=detectorColor, s=11, zorder=zorderDetectors)
-ax.annotate("LIGO Livingston", (LouisianaLat + 2e5, LouisianaLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
-ax.scatter(LouisianaLat, LouisianaLon, c=detectorColor, s=11, zorder=zorderDetectors)
-ax.annotate("VIRGO", (VirgoLat + 2e5, VirgoLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
-ax.scatter(VirgoLat, VirgoLon, c=detectorColor, s=11, zorder=zorderDetectors)
+#GW Detectors
+ax.annotate("LIGO Hanford", (WashingtonLat + 2e5, WashingtonLon + 2e5), color=gw_detector_color, zorder=zorderDetectors, size=fontSize)
+ax.scatter(WashingtonLat, WashingtonLon, c=gw_detector_color, s=11, zorder=zorderDetectors)
+ax.annotate("LIGO Livingston", (LouisianaLat + 2e5, LouisianaLon + 2e5), color=gw_detector_color, zorder=zorderDetectors, size=fontSize)
+ax.scatter(LouisianaLat, LouisianaLon, c=gw_detector_color, s=11, zorder=zorderDetectors)
+ax.annotate("VIRGO", (VirgoLat + 2e5, VirgoLon + 2e5), color=gw_detector_color, zorder=zorderDetectors, size=fontSize)
+ax.scatter(VirgoLat, VirgoLon, c=gw_detector_color, s=11, zorder=zorderDetectors)   
+ax.annotate("KAGRA", (KAGRALat + 2e5, KAGRALon + 2e5), color=gw_detector_color, zorder=zorderDetectors, size=fontSize)
+ax.scatter(KAGRALat, KAGRALon, c=gw_detector_color, s=11, zorder=zorderDetectors)   
 
-beta_Cheren_S = math.radians(GWDetector.DMS_TO_DEGREES(-24,-41,-.34))
-lambd_Cheren_S = math.radians(GWDetector.DMS_TO_DEGREES(-70,-18,-58.84))
+
+#GRB Detectors
+radius = 6371 * math.sin(math.radians(35)) #In km
+grb_detector_color =  'yellow'
+
+center_lat_Cheren_N = GWDetector.DMS_TO_DEGREES(28,45,43.7904)
+center_lon_Cheren_N = GWDetector.DMS_TO_DEGREES(-17,-53,-31.218)
+beta_Cheren_N = math.radians(center_lat_Cheren_N)
+lambd_Cheren_N = math.radians(center_lon_Cheren_N)
+CherenNLat, CherenNLon = m(math.degrees(lambd_Cheren_N), math.degrees(beta_Cheren_N))
+ax.annotate("CTA North and MAGIC", (CherenNLat + 2e5, CherenNLon + 2e5), color=grb_detector_color, zorder=zorderDetectors, size=fontSize)
+ax.scatter(CherenNLat, CherenNLon, c=grb_detector_color, s=25, marker='*', zorder=zorderDetectors)
+equi(m, ax, center_lon_Cheren_N, center_lat_Cheren_N, radius,lw=1., c='g')
+
+center_lat_HESS = GWDetector.DMS_TO_DEGREES(-23, -16, -17)
+center_lon_HESS = GWDetector.DMS_TO_DEGREES(16, 30, 0)
+beta_HESS = math.radians(center_lat_HESS)
+lambd_HESS = math.radians(center_lon_HESS)
+HESS_lat, HESS_lon = m(math.degrees(lambd_HESS), math.degrees(beta_HESS))
+ax.annotate("H.E.S.S.", (HESS_lat + 2e5, HESS_lon + 2e5), color=grb_detector_color, zorder=zorderDetectors, size=fontSize)
+ax.scatter(HESS_lat, HESS_lon, c=grb_detector_color, s=25, marker='*', zorder=zorderDetectors)
+equi(m, ax, center_lon_HESS, center_lat_HESS, radius,lw=1., c='g')
+
+center_lat_VERITAS = GWDetector.DMS_TO_DEGREES(31, 40, 30)
+center_lon_VERITAS = GWDetector.DMS_TO_DEGREES(-110, -57, -7)
+beta_VERITAS = math.radians(center_lat_VERITAS)
+lambd_VERITAS = math.radians(center_lon_VERITAS)
+VERITAS_lat, VERITAS_lon = m(math.degrees(lambd_VERITAS), math.degrees(beta_VERITAS))
+ax.annotate("VERITAS", (VERITAS_lat - 2e5, VERITAS_lon + 2e5), color=grb_detector_color, zorder=zorderDetectors, size=fontSize)
+ax.scatter(VERITAS_lat, VERITAS_lon, c=grb_detector_color, s=25, marker='*', zorder=zorderDetectors)
+equi(m, ax, center_lon_VERITAS, center_lat_VERITAS, radius,lw=1., c='g')
+
+center_lat_Cheren_S = GWDetector.DMS_TO_DEGREES(-24,-41,-.34)
+center_lon_Cheren_S = GWDetector.DMS_TO_DEGREES(-70,-18,-58.84)
+beta_Cheren_S = math.radians(center_lat_Cheren_S)
+lambd_Cheren_S = math.radians(center_lon_Cheren_S)
 CherenSLat, CherenSLon = m(math.degrees(lambd_Cheren_S), math.degrees(beta_Cheren_S))
-ax.annotate("CTA North", (CherenSLat + 2e5, CherenSLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
-ax.scatter(CherenSLat, CherenSLon, c=detectorColor, s=25, marker='*', zorder=zorderDetectors)
-
-beta_Cheren_N = math.radians(GWDetector.DMS_TO_DEGREES(28,45,43.7904))
-lambd_Cheren_N = math.radians(GWDetector.DMS_TO_DEGREES(-17,-53,-31.218))
-CherenSLat, CherenSLon = m(math.degrees(lambd_Cheren_N), math.degrees(beta_Cheren_N))
-ax.annotate("CTA South", (CherenSLat + 2e5, CherenSLon + 2e5), color=detectorColor, zorder=zorderDetectors, size=fontSize)
-ax.scatter(CherenSLat, CherenSLon, c=detectorColor, s=25, marker='*', zorder=zorderDetectors)
+ax.annotate("CTA South", (CherenSLat + 2e5, CherenSLon + 2e5), color=grb_detector_color, zorder=zorderDetectors, size=fontSize)
+ax.scatter(CherenSLat, CherenSLon, c=grb_detector_color, s=25, marker='*', zorder=zorderDetectors)
+equi(m, ax, center_lon_Cheren_S, center_lat_Cheren_S, radius, lw=1., c='g')
 
 handles, labels = plt.gca().get_legend_handles_labels()
 by_label = OrderedDict(zip(labels, handles))
@@ -202,7 +234,10 @@ plt.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(0.45, 0.2), fonts
 plt.show()
 
 
-fn = Path('/home/n/Documents/Research/GW-Contour-Mapping/Map.svg').expanduser()
+fn_pdf = Path('/home/n/Documents/Research/GW-Contour-Mapping/Media/Map.svg').expanduser()
+fn_png = Path('/home/n/Documents/Research/GW-Contour-Mapping/Media/Map.png').expanduser()
 plt.draw() # necessary to render figure before saving
-fig.savefig(fn, bbox_inches='tight')
+fig.savefig(fn_pdf, bbox_inches='tight', figsize=(19,12))
+fig.savefig(fn_png, bbox_inches='tight', figsize=(19,12))
 
+plt.show()

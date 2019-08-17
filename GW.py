@@ -155,6 +155,13 @@ chi_VIRGO = math.radians(333.5)
 Dv_VIRGO = 170
 VirgoDict = {"beta" : beta_VIRGO, "lambd" : lambd_VIRGO, "chi" : chi_VIRGO, "eta" : eta_AP, "name" : "VIRGO Italy", "visibility distance" : Dv_VIRGO}
 
+#KAGRA
+beta_KAGRA = math.radians(GWDetector.DMS_TO_DEGREES(36, 15, 0))
+lambd_KAGRA = math.radians(GWDetector.DMS_TO_DEGREES(137, 10, 48))
+chi_KAGRA = math.radians(20.)
+Dv_KAGRA = 170
+KAGRADict = {"beta" : beta_KAGRA, "lambd" : lambd_KAGRA, "chi" : chi_KAGRA, "eta" : eta_AP, "name" : "KAGRA Japan", "visibility distance" : Dv_KAGRA}
+
 #Test detector
 beta_Test = math.radians(GWDetector.DMS_TO_DEGREES(0, 0, 0))  + math.pi/2
 lambd_Test = math.radians(GWDetector.DMS_TO_DEGREES(0, 0, 0))
