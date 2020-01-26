@@ -36,7 +36,7 @@ class Event:
         self.thetaPhiPoint = (self.theta, self.phi)
 
 #Setting seed
-random.seed(31)
+random.seed(32)
 
 # Finding how many events at each distance
 k = 1
@@ -48,7 +48,7 @@ for distance in distanceList:
     eventsForDistance = k * (distance ** 3)
     numEventsAtDistance.append(eventsForDistance)
 
-approxTotalEvents = 7e6
+approxTotalEvents = 1e7
 tempTotalEvents = sum(numEventsAtDistance)
 for i, distance in enumerate(distanceList):
     percentEvents = numEventsAtDistance[i] / tempTotalEvents
